@@ -15,5 +15,5 @@ class CatalogoServicio extends Model
     protected $diagnostico;
     protected $estado_pago;
     public $timestamps = true;
-    protected $fillable = ['cantidad_cobrada','diagnostico','estado_pago',];
+    protected $fillable = ['cantidad_cobrada','diagnostico','estado_pago',]; //comentario
 }
