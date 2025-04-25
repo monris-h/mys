@@ -9,7 +9,7 @@
         <h1>Impresoras</h1>
     </div>
     <div class="col-auto titlebar-commands">
-        <a class="btn btn-primary" href="{{ url('/catalogos/empleados/agregar') }}">Agregar</a>
+        <a class="btn btn-primary" href="{{ url('/catalogos/impresoras/agregar') }}">Agregar</a>
     </div>
 </div>
 
