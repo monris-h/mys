@@ -14,7 +14,7 @@
 </div>
 
 <table class="table" id="maintable">
-    <thead>
+    <thead class="bg-purple text-white">
         <tr>
             <th scope="col">ID</th>
             <th scope="col">NOMBRE</th>

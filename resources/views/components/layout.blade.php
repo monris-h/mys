@@ -13,19 +13,18 @@ navegador del usuario-->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Taller de impresoras MYS</title>
+<style>
+    body {
+        margin-top: 80px; /* Incrementar el margen superior para mayor separación */
+    }
+</style>
 </head>
 <body>
-<div class="row">
-<div class="col-2">
 @component("components.sidebar")
 @endcomponent
-</div>
-<div class="col-10">
-<div class="container">
+<div class="container mt-4">
 @section("content")
 @show
-</div>
-</div>
 </div>
 </body>
 </html>
