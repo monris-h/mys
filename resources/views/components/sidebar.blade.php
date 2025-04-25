@@ -1,4 +1,4 @@
-<header class="header bg-purple text-white py-3 shadow-sm w-100 position-fixed top-0">
+<header class="header bg-purple text-white py-3 shadow-sm w-100 position-fixed top-0" style="z-index: 1050;">
     <div class="container d-flex flex-wrap justify-content-between align-items-center">
         <h1 class="h4 mb-0">Taller MYS</h1>
         <nav class="nav">
