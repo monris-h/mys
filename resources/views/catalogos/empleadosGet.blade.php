@@ -22,6 +22,7 @@
             <th scope="col">INGRESO</th>
             <th scope="col">ROL</th>
             <th scope="col">ACTIVO</th>
+            <th scope="col">ACCIONES</th> <!-- Nuevo encabezado -->
         </tr>
     </thead>
     <tbody>
@@ -33,6 +34,9 @@
                 <td>{{ $empleado->fecha_ingreso }}</td>
                 <td>{{ $empleado->rol }}</td>
                 <td>{{ $empleado->estado ? 'Sí' : 'No' }}</td>
+                <td>
+                    <a href="{{ url('/catalogos/empleados/editar/' . $empleado->id_empleado) }}" class="btn btn-sm text-white" style="background-color: #6f42c1;">Editar</a>
+                </td> <!-- Botón Editar en morado -->
             </tr>
         @endforeach
     </tbody>

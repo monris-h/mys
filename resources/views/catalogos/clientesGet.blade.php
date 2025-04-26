@@ -14,13 +14,14 @@
 </div>
 
 <table class="table" id="maintable">
-    <thead>
+    <thead class="bg-purple text-white">
         <tr>
             <th scope="col">ID</th>
             <th scope="col">NOMBRE</th>
             <th scope="col">TELÉFONO</th>
             <th scope="col">EMAIL</th>
             <th scope="col">RFC</th>
+            <th scope="col">ACCIONES</th> <!-- Nuevo encabezado -->
         </tr>
     </thead>
     <tbody>
@@ -31,6 +32,9 @@
                 <td>{{ $cliente->telefono }}</td>
                 <td>{{ $cliente->email }}</td>
                 <td>{{ $cliente->RFC }}</td>
+                <td>
+                    <a href="{{ url('/catalogos/clientes/editar/' . $cliente->id_cliente) }}" class="btn btn-sm text-white" style="background-color: #6f42c1;">Editar</a>
+                </td> <!-- Botón Editar en morado -->
             </tr>
         @endforeach
     </tbody>
