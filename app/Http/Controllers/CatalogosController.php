@@ -6,6 +6,9 @@ use App\Models\Cliente;
 use App\Models\Empleado;
 use App\Models\Impresora;
 use App\Models\CatalogoServicio;
+use App\Models\Venta;
+use App\Models\Factura;
+use App\Models\DetalleVentaServicio;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -46,7 +49,7 @@ class CatalogosController extends Controller
         $nombre = $request->input("nombre");
         $telefono = $request->input("telefono");
         $email = $request->input("email");
-        $rfc = $request->input("RFC"); 
+        $rfc = $request->input("RFC");
 
         $cliente = new Cliente([
             "nombre" => $nombre,
@@ -185,5 +188,19 @@ class CatalogosController extends Controller
 
         return redirect("/catalogos/servicios");
     }
-    
+    public function ventasGet(): View
+    {
+        $ventas = Venta::with(['cliente', 'empleado', 'impresora'])
+                                ->orderBy('fecha_venta', 'desc')
+                                ->paginate(10);
+
+        return view('ventas.ventaGet', [
+            'ventas' => $ventas,
+            "breadcrumbs" => [
+                "Inicio" => url("/"),
+                "Ventas" => url("/ventas")
+            ]
+        ]);
+    }
+
 }

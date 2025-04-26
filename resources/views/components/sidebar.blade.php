@@ -2,6 +2,10 @@
     <div class="container d-flex flex-wrap justify-content-between align-items-center">
         <h1 class="h4 mb-0">Taller MYS</h1>
         <nav class="nav">
+            <!-- Botón para Agregar Venta -->
+            <a href="{{ url('/ventas/create') }}" class="btn btn-light text-purple me-3">
+                <strong>+</strong> Agregar Venta
+            </a>
             <!-- Botón dropdown para Operaciones -->
             <div class="dropdown">
                 <button class="btn btn-light text-purple dropdown-toggle" type="button" id="operacionesDropdown" data-bs-toggle="dropdown" aria-expanded="false">
@@ -12,6 +16,7 @@
                     <li><a class="dropdown-item" href="{{ url('/catalogos/empleados') }}">Empleados</a></li>
                     <li><a class="dropdown-item" href="{{ url('/catalogos/impresoras') }}">Impresoras</a></li>
                     <li><a class="dropdown-item" href="{{ url('/catalogos/servicios') }}">Servicios</a></li>
+                    <li><a class="dropdown-item" href="{{ url('/ventas') }}">Ventas</a></li>
                 </ul>
             </div>
             <!-- Botón dropdown para Opciones -->
