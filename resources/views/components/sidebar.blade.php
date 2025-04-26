@@ -21,7 +21,12 @@
                 </button>
                 <ul class="dropdown-menu" aria-labelledby="opcionesDropdown">
                     <li><a class="dropdown-item" href="{{ url('/reportes') }}">Reportes</a></li>
-                    <li><a class="dropdown-item text-danger" href="{{ url('/logout') }}">Salir</a></li>
+                    <li>
+                        <form action="{{ route('logout') }}" method="POST" class="nav-link p-0 m-0 border-0 bg-transparent">
+                            @csrf
+                            <button type="submit" class="btn btn-link nav-link p-0 m-0">Salir</button>
+                        </form>
+                    </li>
                 </ul>
             </div>
         </nav>
