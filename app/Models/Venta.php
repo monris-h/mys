@@ -13,13 +13,6 @@ class Venta extends Model
     public $incrementing = true;
     protected $keyType = 'int';
     public $timestamps = false;
-    protected $estado_pago;
-    protected $fecha_venta;
-    protected $metodo_pago;
-    protected $monto_total;
-    protected $id_cliente;
-    protected $id_empleado;
-    protected $id_impresora;
     protected $fillable = ['estado_pago','fecha_venta','metodo_pago','monto_total','id_cliente','id_empleado','id_impresora'];
 
     // Relaciones

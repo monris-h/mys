@@ -13,9 +13,6 @@ class DetalleVentaServicio extends Model
     public $incrementing = true;
     protected $keyType = 'int';
     public $timestamps = false;
-    protected $subtotal;
-    protected $id_CatalogoServicio;
-    protected $id_venta;
     protected $fillable = ['subtotal', 'id_CatalogoServicio', 'id_venta'];
 
     // Relaciones

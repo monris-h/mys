@@ -3,7 +3,6 @@
 namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-// Creation of model catalogoservicio
 
 class CatalogoServicio extends Model
 {
@@ -12,9 +11,12 @@ class CatalogoServicio extends Model
     protected $primaryKey = 'id_CatalogoServicio';
     public $incrementing = true;
     protected $keyType = 'int';
-    protected $cantidad_cobrada;
-    protected $diagnostico;
-    protected $estado_pago;
-    public $timestamps = true;
-    protected $fillable = ['cantidad_cobrada','diagnostico','estado_pago',];
+    public $timestamps = false;
+    protected $fillable = ['cantidad_cobrada','diagnostico','estado_pago'];
+    
+    // Relación con DetalleVentaServicio
+    public function detallesVenta()
+    {
+        return $this->hasMany(DetalleVentaServicio::class, 'id_CatalogoServicio', 'id_CatalogoServicio');
+    }
 }

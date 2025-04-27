@@ -191,8 +191,8 @@ class CatalogosController extends Controller
     public function ventasGet(): View
     {
         $ventas = Venta::with(['cliente', 'empleado', 'impresora'])
-                                ->orderBy('fecha_venta', 'desc')
-                                ->paginate(10);
+                        ->orderBy('id_venta', 'desc')  // Changed from fecha_venta to id_venta
+                        ->paginate(10);
 
         return view('ventas.ventaGet', [
             'ventas' => $ventas,
@@ -231,37 +231,61 @@ class CatalogosController extends Controller
             'id_empleado' => 'required|exists:empleado,id_empleado',
             'id_impresora' => 'required|exists:impresora,id_impresora',
             'fecha_venta' => 'required|date',
-            'metodo_pago' => 'required|string',
+            'metodo_pago' => 'required|string|in:Efectivo,Tarjeta,Transferencia',
             'estado_pago' => 'required|boolean',
-            'monto_total' => 'required|numeric',
+            'monto_total' => 'required|numeric|min:0.01',
             'servicios' => 'required|array',
+            'servicios.*.id_CatalogoServicio' => 'required|exists:catalogoservicio,id_CatalogoServicio',
+            'servicios.*.subtotal' => 'required|numeric|min:0.01',
         ]);
 
-        // Crear la venta
-        $venta = new Venta([
-            'id_cliente' => $request->input('id_cliente'),
-            'id_empleado' => $request->input('id_empleado'),
-            'id_impresora' => $request->input('id_impresora'),
-            'fecha_venta' => $request->input('fecha_venta'),
-            'metodo_pago' => $request->input('metodo_pago'),
-            'estado_pago' => $request->input('estado_pago'),
-            'monto_total' => $request->input('monto_total'),
-        ]);
+        try {
+            // Usar transacción para garantizar la integridad de los datos
+            \DB::beginTransaction();
 
-        $venta->save();
+            // Crear la venta
+            $venta = new Venta([
+                'id_cliente' => $request->input('id_cliente'),
+                'id_empleado' => $request->input('id_empleado'),
+                'id_impresora' => $request->input('id_impresora'),
+                'fecha_venta' => $request->input('fecha_venta'),
+                'metodo_pago' => $request->input('metodo_pago'),
+                'estado_pago' => $request->input('estado_pago'),
+                'monto_total' => $request->input('monto_total'),
+            ]);
 
-        // Guardar los detalles de servicios
-        foreach ($request->input('servicios') as $servicio) {
-            if (!empty($servicio['id_CatalogoServicio'])) {
-                $detalle = new DetalleVentaServicio([
-                    'id_venta' => $venta->id_venta,
-                    'id_CatalogoServicio' => $servicio['id_CatalogoServicio'],
-                    'subtotal' => $servicio['subtotal'],
-                ]);
-                $detalle->save();
+            $venta->save();
+
+            // Guardar los detalles de servicios
+            $serviciosGuardados = 0;
+            foreach ($request->input('servicios') as $servicio) {
+                if (!empty($servicio['id_CatalogoServicio'])) {
+                    $detalle = new DetalleVentaServicio([
+                        'id_venta' => $venta->id_venta,
+                        'id_CatalogoServicio' => $servicio['id_CatalogoServicio'],
+                        'subtotal' => $servicio['subtotal'],
+                    ]);
+                    $detalle->save();
+                    $serviciosGuardados++;
+                }
             }
-        }
 
-        return redirect('/ventas')->with('success', 'Venta registrada correctamente');
+            // Verificar que al menos un servicio haya sido guardado
+            if ($serviciosGuardados === 0) {
+                throw new \Exception('Debe seleccionar al menos un servicio válido.');
+            }
+
+            // Si todo salió bien, confirmar la transacción
+            \DB::commit();
+            
+            return redirect('/ventas')->with('success', 'Venta registrada correctamente');
+        } catch (\Exception $e) {
+            // Si algo falló, revertir la transacción
+            \DB::rollBack();
+            
+            return back()
+                ->withInput()
+                ->with('error', 'Error al registrar la venta: ' . $e->getMessage());
+        }
     }
 }

@@ -13,10 +13,6 @@ class Factura extends Model
     public $incrementing = true;
     protected $keyType = 'int';
     public $timestamps = false;
-    protected $RFC;
-    protected $fecha_emision;
-    protected $total;
-    protected $id_venta;
     protected $fillable = ['RFC', 'fecha_emision', 'total', 'id_venta'];
 
     // Relación con venta
