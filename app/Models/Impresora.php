@@ -13,10 +13,11 @@ class Impresora extends Model
     public $incrementing = true;
     protected $keyType = 'int';
     public $timestamps = false;
-    protected $modelo;
-    protected $numero_serie;
-    protected $fecha_entrada;
-    protected $fecha_salida;
     protected $fillable = ['modelo','numero_serie','fecha_entrada','fecha_salida'];
-
+    
+    // Relación con Venta
+    public function ventas()
+    {
+        return $this->hasMany(Venta::class, 'id_impresora', 'id_impresora');
+    }
 }

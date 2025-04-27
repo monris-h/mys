@@ -11,10 +11,12 @@ class Cliente extends Model
     protected $primaryKey = 'id_cliente';
     public $incrementing = true;
     protected $keyType = 'int';
-    protected $nombre;
-    protected $telefono;
-    protected $email;
-    protected $RFC;
     public $timestamps = false;
     protected $fillable = ['nombre','telefono','email','RFC'];
+    
+    // Relación con Venta
+    public function ventas()
+    {
+        return $this->hasMany(Venta::class, 'id_cliente', 'id_cliente');
+    }
 }

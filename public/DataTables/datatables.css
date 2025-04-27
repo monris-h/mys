@@ -362,6 +362,11 @@ table.dataTable {
    * Body styles
    */
 }
+table.dataTable thead th {
+  background-color: #6f42c1; /* Color morado */
+  color: white; /* Texto blanco */
+  font-weight: bold;
+}
 table.dataTable thead th,
 table.dataTable tfoot th {
   font-weight: bold;

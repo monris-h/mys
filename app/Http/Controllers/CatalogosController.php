@@ -6,8 +6,12 @@ use App\Models\Cliente;
 use App\Models\Empleado;
 use App\Models\Impresora;
 use App\Models\CatalogoServicio;
+use App\Models\Venta;
+use App\Models\Factura;
+use App\Models\DetalleVentaServicio;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Illuminate\Http\RedirectResponse;
 
 class CatalogosController extends Controller
 {
@@ -23,11 +27,41 @@ class CatalogosController extends Controller
         return view('catalogos/clientesGet', [
             'clientes' => $clientes,
             "breadcrumbs" => [
-                "Inicio" => url("/"),
+                "Inicio" => url("/homeApp"),
                 "Clientes" => url("/catalogos/clientes")
             ]
         ]);
     }
+
+    public function clientesAgregarGet(): View
+    {
+        return view('catalogos/clientesAgregarGet', [
+            "breadcrumbs" => [
+                "Inicio" => url("/homeApp"),
+                "Clientes" => url("/catalogos/clientes"),
+                "Agregar" => url("/catalogos/clientes/agregar")
+            ]
+        ]);
+    }
+
+    public function clientesAgregarPost(Request $request): RedirectResponse
+    {
+        $nombre = $request->input("nombre");
+        $telefono = $request->input("telefono");
+        $email = $request->input("email");
+        $rfc = $request->input("RFC");
+
+        $cliente = new Cliente([
+            "nombre" => $nombre,
+            "telefono" => $telefono,
+            "email" => $email,
+            "RFC" => $rfc
+        ]);
+        $cliente->save();
+
+        return redirect("/catalogos/clientes");
+    }
+
 
     public function empleadosGet(): View
     {
@@ -35,10 +69,44 @@ class CatalogosController extends Controller
         return view('catalogos/empleadosGet', [
             'empleados' => $empleados,
             "breadcrumbs" => [
-                "Inicio" => url("/"),
+                "Inicio" => url("/homeApp"),
                 "Empleados" => url("/catalogos/empleados")
             ]
         ]);
+    }
+
+    public function empleadosAgregarGet(): View
+    {
+        // Si necesitaras pasar datos al formulario (ej: una lista de roles), los buscarías aquí
+        // $roles = Roles::all(); // Ejemplo
+        return view('catalogos/empleadosAgregarGet', [
+            // 'roles' => $roles, // Ejemplo si pasaras datos
+            "breadcrumbs" => [
+                "Inicio" => url("/homeApp"),
+                "Empleados" => url("/catalogos/empleados"),
+                "Agregar" => url("/catalogos/empleados/agregar")
+            ]
+        ]);
+    }
+
+    public function empleadosAgregarPost(Request $request): RedirectResponse
+    {
+        $nombre = $request->input("nombre");
+        $estado = $request->input("estado");
+        $fecha_ingreso = $request->input("fecha_ingreso");
+        $telefono = $request->input("telefono");
+        $rol = $request->input("rol");
+
+        $empleado = new Empleado([
+            "nombre" => strtoupper($nombre),
+            "estado" => $estado,
+            "fecha_ingreso" => $fecha_ingreso,
+            "telefono" => $telefono,
+            "rol" => $rol
+        ]);
+        $empleado->save();
+
+        return redirect("/catalogos/empleados");
     }
 
     public function impresorasGet(): View
@@ -47,10 +115,39 @@ class CatalogosController extends Controller
         return view('catalogos/impresorasGet', [
             'impresoras' => $impresoras,
             "breadcrumbs" => [
-                "Inicio" => url("/"),
+                "Inicio" => url("/homeApp"),
                 "Impresoras" => url("/catalogos/impresoras")
             ]
         ]);
+    }
+
+    public function impresorasAgregarGet(): View
+    {
+        return view('catalogos/impresorasAgregarGet', [
+            "breadcrumbs" => [
+                "Inicio" => url("/homeApp"),
+                "Impresoras" => url("/catalogos/impresoras"),
+                "Agregar" => url("/catalogos/impresoras/agregar")
+            ]
+        ]);
+    }
+
+    public function impresorasAgregarPost(Request $request): RedirectResponse
+    {
+        $modelo = $request->input("modelo");
+        $numero_serie = $request->input("numero_serie");
+        $fecha_entrada = $request->input("fecha_entrada");
+        $fecha_salida = $request->input("fecha_salida"); // Será null si no se envía
+
+        $impresora = new Impresora([
+            "modelo" => $modelo,
+            "numero_serie" => $numero_serie,
+            "fecha_entrada" => $fecha_entrada,
+            "fecha_salida" => $fecha_salida
+        ]);
+        $impresora->save();
+
+        return redirect("/catalogos/impresoras");
     }
 
     public function serviciosGet(): View
@@ -59,9 +156,279 @@ class CatalogosController extends Controller
         return view('catalogos/serviciosGet', [
             'servicios' => $servicios,
             "breadcrumbs" => [
-                "Inicio" => url("/"),
+                "Inicio" => url("/homeApp"),
                 "Servicios" => url("/catalogos/servicios")
             ]
         ]);
+    }
+
+    public function serviciosAgregarGet(): View
+    {
+        return view('catalogos/serviciosAgregarGet', [
+            "breadcrumbs" => [
+                "Inicio" => url("/homeApp"),
+                "Servicios" => url("/catalogos/servicios"),
+                "Agregar" => url("/catalogos/servicios/agregar")
+            ]
+        ]);
+    }
+
+    public function serviciosAgregarPost(Request $request): RedirectResponse
+    {
+        $cantidad_cobrada = $request->input("cantidad_cobrada");
+        $diagnostico = $request->input("diagnostico");
+        $estado_pago = $request->input("estado_pago");
+
+        $servicio = new CatalogoServicio([
+            "cantidad_cobrada" => $cantidad_cobrada,
+            "diagnostico" => $diagnostico,
+            "estado_pago" => $estado_pago
+        ]);
+        $servicio->save();
+
+        return redirect("/catalogos/servicios");
+    }
+    public function ventasGet(): View
+    {
+        $ventas = Venta::with(['cliente', 'empleado', 'impresora'])
+                        ->orderBy('id_venta', 'desc')  // Changed from fecha_venta to id_venta
+                        ->paginate(10);
+
+        return view('ventas.ventaGet', [
+            'ventas' => $ventas,
+            "breadcrumbs" => [
+                "Inicio" => url("/homeApp"),
+                "Ventas" => url("/ventas")
+            ]
+        ]);
+    }
+
+    public function ventasAgregarGet(): View
+    {
+        $clientes = Cliente::all();
+        $empleados = Empleado::all();
+        $impresoras = Impresora::all();
+        $servicios = CatalogoServicio::all();
+
+        return view('ventas/ventasAgregarGet', [
+            'clientes' => $clientes,
+            'empleados' => $empleados,
+            'impresoras' => $impresoras,
+            'servicios' => $servicios,
+            "breadcrumbs" => [
+                "Inicio" => url("/homeApp"),
+                "Ventas" => url("/ventas"),
+                "Agregar" => url("/ventas/agregar")
+            ]
+        ]);
+    }
+
+    public function ventasAgregarPost(Request $request): RedirectResponse
+    {
+        // Validar datos básicos
+        $request->validate([
+            'id_cliente' => 'required|exists:cliente,id_cliente',
+            'id_empleado' => 'required|exists:empleado,id_empleado',
+            'id_impresora' => 'required|exists:impresora,id_impresora',
+            'fecha_venta' => 'required|date',
+            'metodo_pago' => 'required|string|in:Efectivo,Tarjeta,Transferencia',
+            'estado_pago' => 'required|boolean',
+            'monto_total' => 'required|numeric|min:0.01',
+            'servicios' => 'required|array',
+            'servicios.*.id_CatalogoServicio' => 'required|exists:catalogoservicio,id_CatalogoServicio',
+            'servicios.*.subtotal' => 'required|numeric|min:0.01',
+        ]);
+
+        try {
+            // Usar transacción para garantizar la integridad de los datos
+            \DB::beginTransaction();
+
+            // Crear la venta
+            $venta = new Venta([
+                'id_cliente' => $request->input('id_cliente'),
+                'id_empleado' => $request->input('id_empleado'),
+                'id_impresora' => $request->input('id_impresora'),
+                'fecha_venta' => $request->input('fecha_venta'),
+                'metodo_pago' => $request->input('metodo_pago'),
+                'estado_pago' => $request->input('estado_pago'),
+                'monto_total' => $request->input('monto_total'),
+            ]);
+
+            $venta->save();
+
+            // Guardar los detalles de servicios
+            $serviciosGuardados = 0;
+            foreach ($request->input('servicios') as $servicio) {
+                if (!empty($servicio['id_CatalogoServicio'])) {
+                    $detalle = new DetalleVentaServicio([
+                        'id_venta' => $venta->id_venta,
+                        'id_CatalogoServicio' => $servicio['id_CatalogoServicio'],
+                        'subtotal' => $servicio['subtotal'],
+                    ]);
+                    $detalle->save();
+                    $serviciosGuardados++;
+                }
+            }
+
+            // Verificar que al menos un servicio haya sido guardado
+            if ($serviciosGuardados === 0) {
+                throw new \Exception('Debe seleccionar al menos un servicio válido.');
+            }
+
+            // Si todo salió bien, confirmar la transacción
+            \DB::commit();
+            
+            return redirect('/ventas')->with('success', 'Venta registrada correctamente');
+        } catch (\Exception $e) {
+            // Si algo falló, revertir la transacción
+            \DB::rollBack();
+            
+            return back()
+                ->withInput()
+                ->with('error', 'Error al registrar la venta: ' . $e->getMessage());
+        }
+    }
+
+    public function ventasDetalleGet($id): View
+    {
+        // Obtener la venta con todas sus relaciones
+        $venta = Venta::with(['cliente', 'empleado', 'impresora', 'detallesVenta.catalogoServicio'])
+                    ->findOrFail($id);
+        
+        // Obtener la factura si existe
+        $factura = Factura::where('id_venta', $id)->first();
+        
+        return view('ventas.ventasDetalleGet', [
+            'venta' => $venta,
+            'factura' => $factura,
+            "breadcrumbs" => [
+                "Inicio" => url("/homeApp"),
+                "Ventas" => url("/ventas"),
+                "Detalle" => url("/ventas/detalle/{$id}")
+            ]
+        ]);
+    }
+
+    public function empleadosEditarGet(int $id_empleado): View
+    {
+        // Busca el empleado por ID o falla (404) si no existe
+        $empleado = Empleado::findOrFail($id_empleado);
+
+        // Prepara breadcrumbs para la vista de edición
+        $breadcrumbs = [
+            "Inicio" => url("/"),
+            "Empleados" => url("/catalogos/empleados"),
+            "Editar" => url("/catalogos/empleados/editar/{$id_empleado}") // URL actual
+        ];
+
+        // Pasa el empleado y breadcrumbs a la vista
+        return view('catalogos/empleadosEditarGet', [
+            'empleado' => $empleado,
+            'breadcrumbs' => $breadcrumbs
+        ]);
+    }
+
+    /**
+     * Actualiza un empleado existente en la base de datos.
+     *
+     * @param  Request  $request Los datos del formulario.
+     * @param  int  $id_empleado El ID del empleado a actualizar.
+     * @return RedirectResponse
+     */
+    public function empleadosEditarPost(Request $request, int $id_empleado): RedirectResponse
+    {
+        // Busca el empleado existente
+        $empleado = Empleado::findOrFail($id_empleado);
+
+        // --- IMPORTANTE: Validación Omitida por Simplicidad ---
+        // Añadir validación aquí es crucial en una aplicación real.
+        // Por ejemplo, validar tipos de datos, campos requeridos, etc.
+        // $validatedData = $request->validate([
+        //     'nombre' => 'required|string|max:255',
+        //     'fecha_ingreso' => 'required|date',
+        //     'telefono' => 'required|string|max:20',
+        //     'rol' => 'required|string|max:50',
+        //     'estado' => 'required|boolean',
+        // ]);
+        // Y luego usar $validatedData['nombre'] en lugar de $request->input('nombre')
+        // -------------------------------------------------------
+
+        // Obtiene los datos del request (estilo manual)
+        $nombre = $request->input("nombre");
+        $fecha_ingreso = $request->input("fecha_ingreso");
+        $telefono = $request->input("telefono");
+        $rol = $request->input("rol");
+        $estado = $request->input("estado"); // Debería ser '1' o '0' desde el select
+
+        // Actualiza los atributos del modelo Empleado
+        $empleado->nombre = strtoupper($nombre); // Consistente con tu AgregarPost
+        $empleado->fecha_ingreso = $fecha_ingreso;
+        $empleado->telefono = $telefono;
+        $empleado->rol = $rol;
+        $empleado->estado = $estado; // Actualiza el estado
+
+        // Guarda los cambios
+        $empleado->save();
+
+        // Redirige a la lista con mensaje de éxito
+        return redirect('/catalogos/empleados')->with('success', 'Empleado actualizado exitosamente.');
+    }
+
+    public function clientesEditarGet(int $id_cliente): View
+    {
+        // Busca el cliente por ID o falla si no lo encuentra
+        $cliente = Cliente::findOrFail($id_cliente);
+
+        // Prepara los breadcrumbs para la vista de edición
+        $breadcrumbs = [
+            "Inicio" => url("/"),
+            "Clientes" => url("/catalogos/clientes"),
+            "Editar" => url("/catalogos/clientes/editar/{$id_cliente}") // URL de esta misma vista
+        ];
+
+        // Pasa el cliente encontrado y los breadcrumbs a la vista
+        return view('catalogos/clientesEditarGet', [
+            'cliente' => $cliente,
+            'breadcrumbs' => $breadcrumbs
+        ]);
+    }
+
+    /**
+     * Actualiza un cliente existente en la base de datos.
+     *
+     * @param  Request  $request Los datos del formulario.
+     * @param  int  $id_cliente El ID del cliente a actualizar.
+     * @return RedirectResponse
+     */
+    public function clientesEditarPost(Request $request, int $id_cliente): RedirectResponse
+    {
+        // Busca el cliente existente o falla si no existe
+        $cliente = Cliente::findOrFail($id_cliente);
+
+        // --- IMPORTANTE: Validación Omitida por Simplicidad ---
+        // Aquí deberías validar los datos ($request->validate([...])).
+        // Especialmente, al validar 'email', asegúrate de que sea único
+        // pero ignorando el email del cliente actual. Ejemplo:
+        // 'email' => 'required|email|max:255|unique:cliente,email,' . $id_cliente . ',id_cliente'
+        // -------------------------------------------------------
+
+        // Obtiene los datos del request (siguiendo tu estilo)
+        $nombre = $request->input("nombre");
+        $telefono = $request->input("telefono");
+        $email = $request->input("email");
+        $rfc = $request->input("RFC");
+
+        // Actualiza los atributos del modelo Cliente
+        $cliente->nombre = $nombre; // Podrías usar strtoupper($nombre) si quieres
+        $cliente->telefono = $telefono;
+        $cliente->email = $email;
+        $cliente->RFC = $rfc;
+
+        // Guarda los cambios en la base de datos
+        $cliente->save();
+
+        // Redirige de vuelta a la lista de clientes con un mensaje de éxito
+        return redirect('/catalogos/clientes')->with('success', 'Cliente actualizado exitosamente.');
+        // El ->with(...) es opcional, pero útil para mostrar mensajes al usuario.
     }
 }
