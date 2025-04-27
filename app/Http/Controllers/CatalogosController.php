@@ -27,7 +27,7 @@ class CatalogosController extends Controller
         return view('catalogos/clientesGet', [
             'clientes' => $clientes,
             "breadcrumbs" => [
-                "Inicio" => url("/"),
+                "Inicio" => url("/homeApp"),
                 "Clientes" => url("/catalogos/clientes")
             ]
         ]);
@@ -37,7 +37,7 @@ class CatalogosController extends Controller
     {
         return view('catalogos/clientesAgregarGet', [
             "breadcrumbs" => [
-                "Inicio" => url("/"),
+                "Inicio" => url("/homeApp"),
                 "Clientes" => url("/catalogos/clientes"),
                 "Agregar" => url("/catalogos/clientes/agregar")
             ]
@@ -69,7 +69,7 @@ class CatalogosController extends Controller
         return view('catalogos/empleadosGet', [
             'empleados' => $empleados,
             "breadcrumbs" => [
-                "Inicio" => url("/"),
+                "Inicio" => url("/homeApp"),
                 "Empleados" => url("/catalogos/empleados")
             ]
         ]);
@@ -82,7 +82,7 @@ class CatalogosController extends Controller
         return view('catalogos/empleadosAgregarGet', [
             // 'roles' => $roles, // Ejemplo si pasaras datos
             "breadcrumbs" => [
-                "Inicio" => url("/"),
+                "Inicio" => url("/homeApp"),
                 "Empleados" => url("/catalogos/empleados"),
                 "Agregar" => url("/catalogos/empleados/agregar")
             ]
@@ -115,7 +115,7 @@ class CatalogosController extends Controller
         return view('catalogos/impresorasGet', [
             'impresoras' => $impresoras,
             "breadcrumbs" => [
-                "Inicio" => url("/"),
+                "Inicio" => url("/homeApp"),
                 "Impresoras" => url("/catalogos/impresoras")
             ]
         ]);
@@ -125,7 +125,7 @@ class CatalogosController extends Controller
     {
         return view('catalogos/impresorasAgregarGet', [
             "breadcrumbs" => [
-                "Inicio" => url("/"),
+                "Inicio" => url("/homeApp"),
                 "Impresoras" => url("/catalogos/impresoras"),
                 "Agregar" => url("/catalogos/impresoras/agregar")
             ]
@@ -156,7 +156,7 @@ class CatalogosController extends Controller
         return view('catalogos/serviciosGet', [
             'servicios' => $servicios,
             "breadcrumbs" => [
-                "Inicio" => url("/"),
+                "Inicio" => url("/homeApp"),
                 "Servicios" => url("/catalogos/servicios")
             ]
         ]);
@@ -166,7 +166,7 @@ class CatalogosController extends Controller
     {
         return view('catalogos/serviciosAgregarGet', [
             "breadcrumbs" => [
-                "Inicio" => url("/"),
+                "Inicio" => url("/homeApp"),
                 "Servicios" => url("/catalogos/servicios"),
                 "Agregar" => url("/catalogos/servicios/agregar")
             ]
@@ -197,10 +197,71 @@ class CatalogosController extends Controller
         return view('ventas.ventaGet', [
             'ventas' => $ventas,
             "breadcrumbs" => [
-                "Inicio" => url("/"),
+                "Inicio" => url("/homeApp"),
                 "Ventas" => url("/ventas")
             ]
         ]);
     }
 
+    public function ventasAgregarGet(): View
+    {
+        $clientes = Cliente::all();
+        $empleados = Empleado::all();
+        $impresoras = Impresora::all();
+        $servicios = CatalogoServicio::all();
+
+        return view('ventas/ventasAgregarGet', [
+            'clientes' => $clientes,
+            'empleados' => $empleados,
+            'impresoras' => $impresoras,
+            'servicios' => $servicios,
+            "breadcrumbs" => [
+                "Inicio" => url("/homeApp"),
+                "Ventas" => url("/ventas"),
+                "Agregar" => url("/ventas/agregar")
+            ]
+        ]);
+    }
+
+    public function ventasAgregarPost(Request $request): RedirectResponse
+    {
+        // Validar datos básicos
+        $request->validate([
+            'id_cliente' => 'required|exists:cliente,id_cliente',
+            'id_empleado' => 'required|exists:empleado,id_empleado',
+            'id_impresora' => 'required|exists:impresora,id_impresora',
+            'fecha_venta' => 'required|date',
+            'metodo_pago' => 'required|string',
+            'estado_pago' => 'required|boolean',
+            'monto_total' => 'required|numeric',
+            'servicios' => 'required|array',
+        ]);
+
+        // Crear la venta
+        $venta = new Venta([
+            'id_cliente' => $request->input('id_cliente'),
+            'id_empleado' => $request->input('id_empleado'),
+            'id_impresora' => $request->input('id_impresora'),
+            'fecha_venta' => $request->input('fecha_venta'),
+            'metodo_pago' => $request->input('metodo_pago'),
+            'estado_pago' => $request->input('estado_pago'),
+            'monto_total' => $request->input('monto_total'),
+        ]);
+
+        $venta->save();
+
+        // Guardar los detalles de servicios
+        foreach ($request->input('servicios') as $servicio) {
+            if (!empty($servicio['id_CatalogoServicio'])) {
+                $detalle = new DetalleVentaServicio([
+                    'id_venta' => $venta->id_venta,
+                    'id_CatalogoServicio' => $servicio['id_CatalogoServicio'],
+                    'subtotal' => $servicio['subtotal'],
+                ]);
+                $detalle->save();
+            }
+        }
+
+        return redirect('/ventas')->with('success', 'Venta registrada correctamente');
+    }
 }

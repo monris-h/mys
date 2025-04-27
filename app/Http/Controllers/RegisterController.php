@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
+USE Illuminate\Support\Facades\Auth;
 use App\Models\User;
 
 class RegisterController extends Controller
@@ -35,8 +36,8 @@ class RegisterController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        auth()->login($user);
+        Auth::login($user);
 
-        return redirect('/');
+        return redirect('/homeApp');
     }
 }

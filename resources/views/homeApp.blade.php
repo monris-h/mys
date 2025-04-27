@@ -1,70 +1,65 @@
 @extends("components.layout")
 
 @section("content")
-<div class="container py-5">
+<div class="container py-4">
     <div class="row justify-content-center">
         <div class="col-md-10">
-            <div class="card shadow-sm border-0 mb-5">
-                <div class="card-body p-4 p-md-5">
-                    <h1 class="display-4 mb-4 text-center">Bienvenido a Nuestra Plataforma</h1>
-                    <p class="lead text-muted">
-                        Bienvenido al Sistema de Información para Taller de Impresoras, un proyecto escolar diseñado para optimizar los procesos de registros y generacion de reportes.
-                    </p>
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-body p-4">
+                    <h1 class="display-5 mb-3 text-center">Bienvenido: {{ Auth::user()->name }}</h1>
 
-                    <div class="mt-5">
-                        <div class="access-card">
-                            <div class="access-card-left">
-                                <div class="icon-container">
-                                    <i class="fas fa-user-plus"></i>
-                                </div>
-                                <h3>Crea tu cuenta</h3>
-                                <p>Registrate y comienza</p>
-                                <a href="{{ url('/register') }}" class="btn btn-outline-light rounded-pill px-4">Registrarse</a>
+                    <!-- Acciones Rápidas (Movido hacia arriba) -->
+                    <h2 class="h4 mb-3 mt-2">Acciones Rápidas</h2>
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <div class="team-card text-center">
+                                <i class="fas fa-user-friends mb-2"></i>
+                                <h5><a href="{{ url('/catalogos/clientes') }}"><strong style="color: #6f42c1;">Clientes</strong></a></h5>
                             </div>
-                            <div class="access-card-right">
-                                <div class="icon-container">
-                                    <i class="fas fa-sign-in-alt"></i>
-                                </div>
-                                <h3>Bienvenido de vuelta</h3>
-                                <p>Continúa donde lo dejaste</p>
-                                <a href="{{ url('/login') }}" class="btn btn-light rounded-pill px-4">Iniciar sesión</a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="team-card text-center">
+                                <i class="fas fa-users-cog mb-2"></i>
+                                <h5><a href="{{ url('/catalogos/empleados') }}"><strong style="color: #6f42c1;">Empleados</strong></a></h5>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="team-card text-center">
+                                <i class="fas fa-print mb-2"></i>
+                                <h5><a href="{{ url('/catalogos/impresoras') }}"><strong style="color: #6f42c1;">Impresoras</strong></a></h5>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="team-card text-center">
+                                <i class="fas fa-cogs mb-2"></i>
+                                <h5><a href="{{ url('/catalogos/servicios') }}"><strong style="color: #6f42c1;">Servicios</strong></a></h5>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
 
-            <div class="row">
-                <div class="col-md-12 mb-4">
-                    <div class="card shadow-sm h-100 border-0">
-                        <div class="card-body p-4 p-md-5">
-                            <h2 class="h3 mb-4">Acerca de Nosotros</h2>
-                            <p class="text-muted mb-4">
-                                Este sistema de gestión de registros y reportes para taller de impresoras fue desarrollado como parte de la materia Desarrollo e Implementación de Sistemas de Información en el Tecnológico Nacional de México, campus Colima. El proyecto forma parte de nuestra formación académica en la carrera de Ingeniería Informática, y está enfocado en crear una solución integral que optimice los procesos administrativos en talleres dedicados a la reparación y mantenimiento de impresoras.
-                            </p>
-
-                            <h4 class="h5 mt-4 mb-3" style="color: var(--theme-purple);">Equipo de Desarrollo</h4>
-                            <div class="row">
-                                <div class="col-md-4 mb-3">
-                                    <div class="team-card text-center">
-                                        <i class="fas fa-code mb-3"></i>
-                                        <h5><strong style="color: #6f42c1;">Yerik Monroy García</strong></h5>
-                                    </div>
-                                </div>
-                                <div class="col-md-4 mb-3">
-                                    <div class="team-card text-center">
-                                        <i class="fas fa-cogs mb-3"></i>
-                                        <h5><strong style="color: #6f42c1;">Erik Alejandro Campos Ahumada</strong></h5>
-                                    </div>
-                                </div>
-                                <div class="col-md-4 mb-3">
-                                    <div class="team-card text-center">
-                                        <i class="fas fa-project-diagram mb-3"></i>
-                                        <h5><strong style="color: #6f42c1;">César Rogelio Corona Cortes</strong></h5>
-                                    </div>
-                                </div>
+                    <!-- Ventas (Simplificado) -->
+                    <div class="mt-3">
+                        <div class="access-card-compact">
+                            <div class="icon-container-sm">
+                                <i class="fas fa-file-invoice-dollar"></i>
+                            </div>
+                            <div class="content">
+                                <h3>Gestión de Ventas</h3>
+                                <p>Administra las ventas del taller</p>
+                            </div>
+                            <div class="action">
+                                <a href="{{ url('/ventas') }}" class="btn btn-light text-purple rounded-pill px-4">Ver ventas</a>
                             </div>
                         </div>
+                    </div>
+
+                    <div class="text-center mt-3">
+                        <form method="POST" action="{{ route('logout') }}" class="d-inline">
+                            @csrf
+                            <button type="submit" class="btn btn-outline-danger rounded-pill px-4">
+                                <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -241,22 +236,16 @@
         text-decoration: underline;
     }
 
-    /* Estilo para los nombres en la sección Acerca de Nosotros */
-    .card-body p.text-muted strong {
-        color: var(--theme-purple);
-        font-weight: 700;
-    }
-
     /* Estilos para las tarjetas del equipo */
     .team-card {
         background-color: rgba(111, 66, 193, 0.05);
         border-radius: 12px;
-        height: 160px;
+        height: 120px;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        padding: 2rem;
+        padding: 1.5rem;
         transition: all 0.3s ease;
     }
 
@@ -274,6 +263,96 @@
 
     .team-card h5 {
         margin-bottom: 0;
+    }
+
+    /* Versión compacta para tarjeta de Ventas */
+    .access-card-compact {
+        display: flex;
+        align-items: center;
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: 0 8px 15px rgba(111, 66, 193, 0.1);
+        margin: 20px 0;
+        background: linear-gradient(135deg, var(--theme-purple) 0%, var(--theme-purple-dark) 100%);
+        color: white;
+    }
+
+    .icon-container-sm {
+        height: 60px;
+        width: 60px;
+        min-width: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(255, 255, 255, 0.2);
+        margin-right: 20px;
+    }
+
+    .icon-container-sm i {
+        font-size: 1.8rem;
+        color: white;
+    }
+
+    .access-card-compact .content {
+        flex: 1;
+    }
+
+    .access-card-compact h3 {
+        font-family: 'Nunito', sans-serif;
+        font-weight: 700;
+        margin: 0 0 5px;
+        font-size: 1.3rem;
+    }
+
+    .access-card-compact p {
+        margin-bottom: 0;
+        opacity: 0.9;
+        font-size: 1rem;
+    }
+
+    .access-card-compact .action {
+        margin-left: 20px;
+    }
+
+    .access-card-compact .btn {
+        background-color: white;
+        color: var(--theme-purple);
+        border-color: white;
+        font-weight: 600;
+    }
+
+    .text-purple {
+        color: var(--theme-purple) !important;
+    }
+
+    .access-card-compact .btn:hover {
+        background-color: rgba(255, 255, 255, 0.9);
+        border-color: rgba(255, 255, 255, 0.9);
+    }
+
+    /* Más compacto para las acciones rápidas */
+    .team-card {
+        height: 120px;
+        padding: 1.5rem;
+    }
+
+    /* Ajustes para pantallas más pequeñas */
+    @media (max-width: 767px) {
+        .access-card-compact {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .icon-container-sm {
+            margin-right: 0;
+            margin-bottom: 15px;
+        }
+
+        .access-card-compact .action {
+            margin-left: 0;
+            margin-top: 15px;
+        }
     }
 </style>
 @endsection

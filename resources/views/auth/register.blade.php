@@ -1,14 +1,17 @@
 @extends('components.layout')
 
 @section('content')
-    <div class="row my-4">
-        <h1>Crear Cuenta</h1>
-    </div>
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+                    <h1 class="display-5 mb-3 text-center" style="color: #6f42c1; font-family: 'Nunito', sans-serif; font-weight: 700;">Crear Cuenta</h1>
 
-    <div class="row my-4">
-        <div class="col-md-6 offset-md-3">
-            <div class="card">
-                <div class="card-body">
+                    <p class="text-muted text-center mb-3">
+                        Completa el formulario para registrarte y acceder a todas las funcionalidades.
+                    </p>
+
                     <form action="{{ route('register') }}" method="POST">
                         @csrf
 
@@ -41,17 +44,71 @@
                             <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" required>
                         </div>
 
-                        <button type="submit" class="btn btn-primary">Crear Cuenta</button>
-                        <a href="{{ url('/') }}" class="btn btn-secondary">Regresar</a>
+                        <div class="d-grid gap-2 mb-3">
+                            <button type="submit" class="btn btn-purple">Crear Cuenta</button>
+                        </div>
+
+                        <div class="text-center">
+                            <a href="{{ url('/') }}" class="btn btn-link text-purple">Regresar al inicio</a>
+                        </div>
                     </form>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <div class="row my-4">
-        <div class="col text-center">
-            <p>¿Ya tienes cuenta? <a href="{{ route('login') }}">Iniciar sesión</a></p>
+            <div class="text-center mt-4">
+                <p>¿Ya tienes cuenta? <a href="{{ route('login') }}" class="text-purple fw-bold">Iniciar sesión</a></p>
+            </div>
         </div>
     </div>
+</div>
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&display=swap');
+
+    :root {
+        --theme-purple: #6f42c1;
+        --theme-purple-light: #8458d5;
+        --theme-purple-dark: #5e35a8;
+    }
+
+    .text-purple {
+        color: var(--theme-purple) !important;
+    }
+
+    .btn-purple {
+        background-color: var(--theme-purple);
+        border-color: var(--theme-purple);
+        color: white;
+    }
+
+    .btn-purple:hover {
+        background-color: var(--theme-purple-dark);
+        border-color: var(--theme-purple-dark);
+        color: white;
+    }
+
+    .btn-link.text-purple:hover {
+        color: var(--theme-purple-dark) !important;
+    }
+
+    .form-control:focus {
+        border-color: var(--theme-purple-light);
+        box-shadow: 0 0 0 0.25rem rgba(111, 66, 193, 0.25);
+    }
+
+    .card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border-radius: 12px;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(111, 66, 193, 0.15) !important;
+    }
+
+    label {
+        font-weight: 500;
+        color: #555;
+    }
+</style>
 @endsection

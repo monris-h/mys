@@ -15,6 +15,7 @@ Route::get('/', [CatalogosController::class, 'home'])->name('home');
 
 // 🛡️ Rutas protegidas: SOLO si el usuario está logueado
 Route::middleware(['auth'])->group(function () {
+    Route::get('/homeApp', function () {return view('homeApp');})->middleware('auth');
 
     // CATALOGOS - GET
     Route::get('/catalogos/clientes', [CatalogosController::class, 'clientesGet']);
@@ -33,14 +34,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/catalogos/empleados/agregar', [CatalogosController::class, 'empleadosAgregarPost']);
     Route::post('/catalogos/impresoras/agregar', [CatalogosController::class, 'impresorasAgregarPost']);
     Route::post('/catalogos/servicios/agregar', [CatalogosController::class, 'serviciosAgregarPost']);
+
+    // Rutas para Ventas
+    Route::get('/ventas', [CatalogosController::class, 'ventasGet']);
+    Route::get('/ventas/agregar', [CatalogosController::class, 'ventasAgregarGet']);
+    Route::post('/ventas/agregar', [CatalogosController::class, 'ventasAgregarPost']);
 });
-
-// Rutas para Ventas
-Route::get('/ventas', [App\Http\Controllers\CatalogosController::class, 'ventasGet'])->name('ventas.index');
-Route::get('/ventas/create', [App\Http\Controllers\CatalogosController::class, 'ventasCreate'])->name('ventas.create');
-Route::post('/ventas', [App\Http\Controllers\CatalogosController::class, 'ventasStore'])->name('ventas.store');
-Route::get('/ventas/{id}', [App\Http\Controllers\CatalogosController::class, 'ventasShow'])->name('ventas.show');
-Route::get('/ventas/{id}/edit', [App\Http\Controllers\CatalogosController::class, 'ventasEdit'])->name('ventas.edit');
-Route::put('/ventas/{id}', [App\Http\Controllers\CatalogosController::class, 'ventasUpdate'])->name('ventas.update');
-Route::delete('/ventas/{id}', [App\Http\Controllers\CatalogosController::class, 'ventasDestroy'])->name('ventas.destroy');
-

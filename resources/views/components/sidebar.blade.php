@@ -3,7 +3,7 @@
         <h1 class="h4 mb-0">Taller MYS</h1>
         <nav class="nav">
             <!-- Botón para Agregar Venta -->
-            <a href="{{ url('/ventas/create') }}" class="btn btn-light text-purple me-3">
+            <a href="{{ url('/ventas/agregar') }}" class="btn btn-light text-purple me-3">
                 <strong>+</strong> Agregar Venta
             </a>
             <!-- Botón dropdown para Operaciones -->

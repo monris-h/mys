@@ -7,7 +7,7 @@
     <h1>Ventas</h1>
 
     <div class="text-end mb-3">
-        <a href="{{ route('ventas.create') }}" class="btn btn-primary">Agregar</a>
+    <a class="btn btn-primary" href="{{ url('/ventas/agregar') }}">Agregar</a>
     </div>
 
     <div class="table-responsive">
@@ -43,7 +43,7 @@
                     <td>{{ $venta->empleado->nombre }}</td>
                     <td>{{ $venta->impresora->modelo }}</td>
                     <td>
-                        <a href="{{ route('ventas.edit', $venta->id_venta) }}" class="btn btn-sm btn-purple">Editar</a>
+                    <a href="{{ url('ventas/editar/' . $venta->id_venta) }}" class="btn btn-sm text-white" style="background-color: #6f42c1;">Editar</a>
                     </td>
                 </tr>
                 @empty
@@ -60,17 +60,5 @@
     </div>
 </div>
 
-<style>
-    .btn-purple {
-        background-color: #6f42c1;
-        color: white;
-    }
-    .btn-purple:hover {
-        background-color: #5a32a3;
-        color: white;
-    }
-    .bg-purple {
-        background-color: #6f42c1;
-    }
-</style>
+
 @endsection
