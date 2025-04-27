@@ -39,4 +39,5 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/ventas', [CatalogosController::class, 'ventasGet']);
     Route::get('/ventas/agregar', [CatalogosController::class, 'ventasAgregarGet']);
     Route::post('/ventas/agregar', [CatalogosController::class, 'ventasAgregarPost']);
+    Route::get('/ventas/detalle/{id}', [CatalogosController::class, 'ventasDetalleGet']);
 });

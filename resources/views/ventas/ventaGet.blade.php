@@ -43,7 +43,8 @@
                     <td>{{ $venta->empleado->nombre }}</td>
                     <td>{{ $venta->impresora->modelo }}</td>
                     <td>
-                    <a href="{{ url('ventas/editar/' . $venta->id_venta) }}" class="btn btn-sm text-white" style="background-color: #6f42c1;">Editar</a>
+                        <a href="{{ url('ventas/detalle/' . $venta->id_venta) }}" class="btn btn-sm text-white me-1" style="background-color: #6f42c1;">Ver Detalle</a>
+                        <a href="{{ url('ventas/editar/' . $venta->id_venta) }}" class="btn btn-sm text-white" style="background-color: #6f42c1;">Editar</a>
                     </td>
                 </tr>
                 @empty

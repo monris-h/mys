@@ -288,4 +288,24 @@ class CatalogosController extends Controller
                 ->with('error', 'Error al registrar la venta: ' . $e->getMessage());
         }
     }
+
+    public function ventasDetalleGet($id): View
+    {
+        // Obtener la venta con todas sus relaciones
+        $venta = Venta::with(['cliente', 'empleado', 'impresora', 'detallesVenta.catalogoServicio'])
+                    ->findOrFail($id);
+        
+        // Obtener la factura si existe
+        $factura = Factura::where('id_venta', $id)->first();
+        
+        return view('ventas.ventasDetalleGet', [
+            'venta' => $venta,
+            'factura' => $factura,
+            "breadcrumbs" => [
+                "Inicio" => url("/homeApp"),
+                "Ventas" => url("/ventas"),
+                "Detalle" => url("/ventas/detalle/{$id}")
+            ]
+        ]);
+    }
 }
