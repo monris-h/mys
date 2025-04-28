@@ -5,6 +5,8 @@
 *.html diff=html
 *.md diff=markdown
 *.php diff=php
+# Auto-detectar archivos de texto y manejar finales de línea automáticamente
+* text=auto eol=lf
 
 /.github export-ignore
 CHANGELOG.md export-ignore

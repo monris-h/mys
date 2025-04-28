@@ -46,4 +46,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/ventas/agregar', [CatalogosController::class, 'ventasAgregarGet']);
     Route::post('/ventas/agregar', [CatalogosController::class, 'ventasAgregarPost']);
     Route::get('/ventas/detalle/{id}', [CatalogosController::class, 'ventasDetalleGet']);
+
+    // Rutas para Editar Empleado
+    Route::get('/catalogos/empleados/editar/{id_empleado}', [CatalogosController::class, 'empleadosEditarGet']);
+    Route::put('/catalogos/empleados/editar/{id_empleado}', [CatalogosController::class, 'empleadosEditarPost']);
+
+    // Rutas para Editar Cliente 
+    Route::get('/catalogos/clientes/editar/{id_cliente}', [CatalogosController::class, 'clientesEditarGet']);
+    Route::put('/catalogos/clientes/editar/{id_cliente}', [CatalogosController::class, 'clientesEditarPost']);
 });
