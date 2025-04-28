@@ -42,10 +42,16 @@
 
                         <div class="mb-3">
                             <label for="fecha_salida" class="form-label">Fecha de Salida (Opcional):</label>
-                            <input type="date" class="form-control @error('fecha_salida') is-invalid @enderror" id="fecha_salida" name="fecha_salida" value="{{ old('fecha_salida', $impresora->fecha_salida) }}">
-                            @error('fecha_salida')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                            <div class="input-group">
+                                <input type="date" class="form-control @error('fecha_salida') is-invalid @enderror" id="fecha_salida" name="fecha_salida" value="{{ old('fecha_salida', $impresora->fecha_salida) }}">
+                                <button type="button" class="btn btn-outline-secondary" onclick="document.getElementById('fecha_salida').value = '';">
+                                    <i class="fas fa-broom me-1"></i> Limpiar
+                                </button>
+                                @error('fecha_salida')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <small class="text-muted">Limpia el campo para marcar la impresora como "Pendiente" de salida</small>
                         </div>
 
                         <div class="d-flex justify-content-between mt-4">

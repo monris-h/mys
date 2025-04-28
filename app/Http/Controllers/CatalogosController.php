@@ -21,11 +21,26 @@ class CatalogosController extends Controller
         return view('home', ["breadcrumbs" => []]);
     }
 
-    public function clientesGet(): View
+    public function clientesGet(Request $request): View
     {
-        $clientes = Cliente::all();
+        $query = Cliente::query();
+        
+        // Aplicar filtros de búsqueda si están presentes
+        if ($request->filled('search')) {
+            $searchTerm = $request->search;
+            $query->where(function($q) use ($searchTerm) {
+                $q->where('nombre', 'LIKE', "%{$searchTerm}%")
+                  ->orWhere('RFC', 'LIKE', "%{$searchTerm}%");
+            });
+        }
+        
+        $clientes = $query->orderBy('id_cliente', 'desc')->paginate(10);
+        // Preservar parámetros de búsqueda en la paginación
+        $clientes->appends($request->only('search'));
+        
         return view('catalogos/clientesGet', [
             'clientes' => $clientes,
+            'search' => $request->search,
             "breadcrumbs" => [
                 "Inicio" => url("/homeApp"),
                 "Clientes" => url("/catalogos/clientes")
@@ -46,28 +61,48 @@ class CatalogosController extends Controller
 
     public function clientesAgregarPost(Request $request): RedirectResponse
     {
-        $nombre = $request->input("nombre");
-        $telefono = $request->input("telefono");
-        $email = $request->input("email");
-        $rfc = $request->input("RFC");
-
-        $cliente = new Cliente([
-            "nombre" => $nombre,
-            "telefono" => $telefono,
-            "email" => $email,
-            "RFC" => $rfc
+        // Validar los datos antes de intentar guardar
+        $validatedData = $request->validate([
+            'nombre' => 'required|string|max:50',
+            'telefono' => 'required|string|max:15',
+            'email' => 'required|email|max:50|unique:cliente,email',
+            'RFC' => 'required|string|max:20|unique:cliente,RFC'
+        ], [
+            'email.unique' => 'Este correo electrónico ya está registrado para otro cliente.',
+            'RFC.unique' => 'Este RFC ya está registrado para otro cliente.'
         ]);
+
+        // Crear el cliente con los datos validados
+        $cliente = new Cliente([
+            "nombre" => $validatedData['nombre'],
+            "telefono" => $validatedData['telefono'],
+            "email" => $validatedData['email'],
+            "RFC" => $validatedData['RFC']
+        ]);
+        
         $cliente->save();
 
-        return redirect("/catalogos/clientes");
+        return redirect("/catalogos/clientes")->with('success', 'Cliente agregado correctamente');
     }
 
 
-    public function empleadosGet(): View
+    public function empleadosGet(Request $request): View
     {
-        $empleados = Empleado::all();
+        $query = Empleado::query();
+        
+        // Filtrar por nombre
+        if ($request->filled('search')) {
+            $searchTerm = $request->search;
+            $query->where('nombre', 'LIKE', "%{$searchTerm}%");
+        }
+        
+        $empleados = $query->orderBy('id_empleado', 'desc')->paginate(10);
+        // Preservar parámetros de búsqueda en la paginación
+        $empleados->appends($request->only('search'));
+        
         return view('catalogos/empleadosGet', [
             'empleados' => $empleados,
+            'search' => $request->search,
             "breadcrumbs" => [
                 "Inicio" => url("/homeApp"),
                 "Empleados" => url("/catalogos/empleados")
@@ -109,11 +144,23 @@ class CatalogosController extends Controller
         return redirect("/catalogos/empleados");
     }
 
-    public function impresorasGet(): View
+    public function impresorasGet(Request $request): View
     {
-        $impresoras = Impresora::all();
+        $query = Impresora::query();
+        
+        // Filtrar por número de serie
+        if ($request->filled('search')) {
+            $searchTerm = $request->search;
+            $query->where('numero_serie', 'LIKE', "%{$searchTerm}%");
+        }
+        
+        $impresoras = $query->orderBy('id_impresora', 'desc')->paginate(10);
+        // Preservar parámetros de búsqueda en la paginación
+        $impresoras->appends($request->only('search'));
+        
         return view('catalogos/impresorasGet', [
             'impresoras' => $impresoras,
+            'search' => $request->search,
             "breadcrumbs" => [
                 "Inicio" => url("/homeApp"),
                 "Impresoras" => url("/catalogos/impresoras")
@@ -134,20 +181,27 @@ class CatalogosController extends Controller
 
     public function impresorasAgregarPost(Request $request): RedirectResponse
     {
-        $modelo = $request->input("modelo");
-        $numero_serie = $request->input("numero_serie");
-        $fecha_entrada = $request->input("fecha_entrada");
-        $fecha_salida = $request->input("fecha_salida"); // Será null si no se envía
-
-        $impresora = new Impresora([
-            "modelo" => $modelo,
-            "numero_serie" => $numero_serie,
-            "fecha_entrada" => $fecha_entrada,
-            "fecha_salida" => $fecha_salida
+        // Validar los datos antes de intentar guardar
+        $validatedData = $request->validate([
+            'modelo' => 'required|string|max:50',
+            'numero_serie' => 'required|string|max:50|unique:impresora,numero_serie',
+            'fecha_entrada' => 'required|date',
+            'fecha_salida' => 'nullable|date'
+        ], [
+            'numero_serie.unique' => 'Este número de serie ya está registrado para otra impresora.'
         ]);
+
+        // Crear el objeto con datos validados
+        $impresora = new Impresora([
+            "modelo" => $validatedData['modelo'],
+            "numero_serie" => $validatedData['numero_serie'],
+            "fecha_entrada" => $validatedData['fecha_entrada'],
+            "fecha_salida" => $validatedData['fecha_salida']
+        ]);
+        
         $impresora->save();
 
-        return redirect("/catalogos/impresoras");
+        return redirect("/catalogos/impresoras")->with('success', 'Impresora agregada correctamente');
     }
 
     public function impresorasEditarGet($id): View
@@ -168,26 +222,44 @@ class CatalogosController extends Controller
     {
         $impresora = Impresora::findOrFail($id);
         
-        $modelo = $request->input("modelo");
-        $numero_serie = $request->input("numero_serie");
-        $fecha_entrada = $request->input("fecha_entrada");
-        $fecha_salida = $request->input("fecha_salida"); // Será null si no se envía
+        // Validación incluyendo regla para ignorar el número de serie actual
+        $validatedData = $request->validate([
+            'modelo' => 'required|string|max:50',
+            'numero_serie' => 'required|string|max:50|unique:impresora,numero_serie,'.$id.',id_impresora',
+            'fecha_entrada' => 'required|date',
+            'fecha_salida' => 'nullable|date'
+        ], [
+            'numero_serie.unique' => 'Este número de serie ya está registrado para otra impresora.'
+        ]);
         
-        $impresora->modelo = $modelo;
-        $impresora->numero_serie = $numero_serie;
-        $impresora->fecha_entrada = $fecha_entrada;
-        $impresora->fecha_salida = $fecha_salida;
+        // Actualizar con datos validados
+        $impresora->modelo = $validatedData['modelo'];
+        $impresora->numero_serie = $validatedData['numero_serie'];
+        $impresora->fecha_entrada = $validatedData['fecha_entrada'];
+        $impresora->fecha_salida = $validatedData['fecha_salida'];
         
         $impresora->save();
 
         return redirect("/catalogos/impresoras")->with('success', 'Impresora actualizada correctamente');
     }
 
-    public function serviciosGet(): View
+    public function serviciosGet(Request $request): View
     {
-        $servicios = CatalogoServicio::all();
+        $query = CatalogoServicio::query();
+        
+        // Filtrar por nombre (diagnóstico)
+        if ($request->filled('search')) {
+            $searchTerm = $request->search;
+            $query->where('diagnostico', 'LIKE', "%{$searchTerm}%");
+        }
+        
+        $servicios = $query->orderBy('id_CatalogoServicio', 'desc')->paginate(10);
+        // Preservar parámetros de búsqueda en la paginación
+        $servicios->appends($request->only('search'));
+        
         return view('catalogos/serviciosGet', [
             'servicios' => $servicios,
+            'search' => $request->search,
             "breadcrumbs" => [
                 "Inicio" => url("/homeApp"),
                 "Servicios" => url("/catalogos/servicios")
@@ -253,14 +325,29 @@ class CatalogosController extends Controller
         return redirect("/catalogos/servicios")->with('success', 'Servicio actualizado correctamente');
     }
 
-    public function ventasGet(): View
+    public function ventasGet(Request $request): View
     {
-        $ventas = Venta::with(['cliente', 'empleado', 'impresora'])
-                        ->orderBy('id_venta', 'desc')  // Changed from fecha_venta to id_venta
-                        ->paginate(10);
+        $query = Venta::with(['cliente', 'empleado', 'impresora']);
+        
+        // Filtrar por nombre de empleado o ID
+        if ($request->filled('search')) {
+            $searchTerm = $request->search;
+            $query->where(function($q) use ($searchTerm) {
+                // Buscar por ID de venta
+                $q->where('id_venta', 'LIKE', "%{$searchTerm}%")
+                  // Buscar por nombre de empleado (usando relación)
+                  ->orWhereHas('empleado', function($query) use ($searchTerm) {
+                      $query->where('nombre', 'LIKE', "%{$searchTerm}%");
+                  });
+            });
+        }
+        
+        $ventas = $query->orderBy('id_venta', 'desc')->paginate(10);
+        $ventas->appends($request->only('search'));
 
         return view('ventas.ventaGet', [
             'ventas' => $ventas,
+            'search' => $request->search,
             "breadcrumbs" => [
                 "Inicio" => url("/homeApp"),
                 "Ventas" => url("/ventas")
@@ -271,9 +358,17 @@ class CatalogosController extends Controller
     public function ventasAgregarGet(): View
     {
         $clientes = Cliente::all();
-        $empleados = Empleado::all();
-        $impresoras = Impresora::all();
-        $servicios = CatalogoServicio::all();
+        
+        // Modificado para aceptar tanto "Activo" como "1" en el campo estado
+        $empleados = Empleado::where('estado', 'Activo')
+                            ->orWhere('estado', '1')
+                            ->get();
+                            
+        // Solo mostrar impresoras disponibles (sin fecha de salida)
+        $impresoras = Impresora::whereNull('fecha_salida')->get();
+        
+        // Solo servicios activos
+        $servicios = CatalogoServicio::where('estado_pago', 1)->get();
 
         return view('ventas/ventasAgregarGet', [
             'clientes' => $clientes,
@@ -485,5 +580,43 @@ class CatalogosController extends Controller
 
         // Redirige de vuelta a la lista de clientes con un mensaje de éxito
         return redirect('/catalogos/clientes')->with('success', 'Cliente actualizado exitosamente.');
+    }
+
+    public function ventasEditarGet($id): View
+    {
+        // Obtener la venta con sus relaciones
+        $venta = Venta::with(['cliente', 'empleado', 'impresora', 'detallesVenta.catalogoServicio'])
+                    ->findOrFail($id);
+        
+        return view('ventas.ventasEditarGet', [
+            'venta' => $venta,
+            "breadcrumbs" => [
+                "Inicio" => url("/homeApp"),
+                "Ventas" => url("/ventas"),
+                "Editar" => url("/ventas/editar/{$id}")
+            ]
+        ]);
+    }
+
+    public function ventasEditarPost(Request $request, $id): RedirectResponse
+    {
+        // Obtener la venta
+        $venta = Venta::findOrFail($id);
+        
+        // Verificar si la venta es editable (solo si está pendiente)
+        if ($venta->estado_pago == 0) {
+            // Validar datos básicos
+            $validatedData = $request->validate([
+                'estado_pago' => 'required|boolean',
+            ]);
+            
+            // Actualizar estado de pago
+            $venta->estado_pago = $validatedData['estado_pago'];
+            $venta->save();
+            
+            return redirect('/ventas')->with('success', 'Estado de pago actualizado correctamente');
+        }
+        
+        return redirect('/ventas')->with('error', 'No se puede editar una venta que ya ha sido pagada');
     }
 }

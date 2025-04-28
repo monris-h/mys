@@ -35,6 +35,14 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/catalogos/servicios/editar/{id}', [CatalogosController::class, 'serviciosEditarGet']);
     Route::post('/catalogos/servicios/editar/{id}', [CatalogosController::class, 'serviciosEditarPost']);
 
+    // CATALOGOS - FORMULARIOS EDITAR
+    Route::get('/catalogos/clientes/editar/{id_cliente}', [CatalogosController::class, 'clientesEditarGet']);
+    Route::post('/catalogos/clientes/editar/{id_cliente}', [CatalogosController::class, 'clientesEditarPost']); // Changed from PUT to POST
+
+    // Keep only one version of empleados routes with consistent POST method
+    Route::get('/catalogos/empleados/editar/{id_empleado}', [CatalogosController::class, 'empleadosEditarGet']);
+    Route::post('/catalogos/empleados/editar/{id_empleado}', [CatalogosController::class, 'empleadosEditarPost']); // Changed from PUT to POST
+
     // CATALOGOS - POST (GUARDAR)
     Route::post('/catalogos/clientes/agregar', [CatalogosController::class, 'clientesAgregarPost']);
     Route::post('/catalogos/empleados/agregar', [CatalogosController::class, 'empleadosAgregarPost']);
@@ -46,12 +54,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/ventas/agregar', [CatalogosController::class, 'ventasAgregarGet']);
     Route::post('/ventas/agregar', [CatalogosController::class, 'ventasAgregarPost']);
     Route::get('/ventas/detalle/{id}', [CatalogosController::class, 'ventasDetalleGet']);
-
-    // Rutas para Editar Empleado
-    Route::get('/catalogos/empleados/editar/{id_empleado}', [CatalogosController::class, 'empleadosEditarGet']);
-    Route::put('/catalogos/empleados/editar/{id_empleado}', [CatalogosController::class, 'empleadosEditarPost']);
-
-    // Rutas para Editar Cliente 
-    Route::get('/catalogos/clientes/editar/{id_cliente}', [CatalogosController::class, 'clientesEditarGet']);
-    Route::put('/catalogos/clientes/editar/{id_cliente}', [CatalogosController::class, 'clientesEditarPost']);
+    
+    // Ventas - Editar
+    Route::get('/ventas/editar/{id}', [CatalogosController::class, 'ventasEditarGet']);
+    Route::post('/ventas/editar/{id}', [CatalogosController::class, 'ventasEditarPost']);
 });

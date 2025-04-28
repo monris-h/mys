@@ -88,7 +88,7 @@
                             <i class="fas fa-arrow-left me-1"></i> Volver
                         </a>
                         @if(!$venta->estado_pago)
-                        <a href="{{ url('/ventas/pagar/' . $venta->id_venta) }}" class="btn btn-sm btn-success">
+                        <a href="{{ url('/ventas/editar/' . $venta->id_venta) }}" class="btn btn-sm btn-success">
                             <i class="fas fa-check me-1"></i> Registrar Pago
                         </a>
                         @endif

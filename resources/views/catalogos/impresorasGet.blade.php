@@ -26,11 +26,32 @@
 </div>
 
 <div class="row my-4">
-    <div class="col">
+    <div class="col-md-6">
         <h1>Impresoras</h1>
     </div>
-    <div class="col-auto titlebar-commands">
-        <a class="btn btn-primary" href="{{ url('/catalogos/impresoras/agregar') }}">Agregar</a>
+    <div class="col-md-6">
+        <div class="d-flex justify-content-end gap-2">
+            <div class="input-group search-container">
+                <span class="input-group-text bg-white border-end-0">
+                    <i class="fas fa-search text-purple"></i>
+                </span>
+                <input 
+                    type="text" 
+                    id="searchInput" 
+                    class="form-control border-start-0" 
+                    placeholder="Buscar por número de serie..." 
+                    value="{{ $search ?? '' }}"
+                >
+                @if(isset($search) && !empty($search))
+                    <button type="button" class="btn text-white clear-btn" id="clearSearch">
+                        <i class="fas fa-times"></i>
+                    </button>
+                @endif
+            </div>
+            <a class="btn btn-purple" href="{{ url('/catalogos/impresoras/agregar') }}">
+                <i class="fas fa-plus me-1"></i> Agregar
+            </a>
+        </div>
     </div>
 </div>
 
@@ -61,6 +82,16 @@
     </tbody>
 </table>
 
+<!-- Clean pagination design -->
+<div class="d-flex justify-content-between align-items-center border-top pt-3 mt-2">
+    <div>
+        <small class="text-muted">Mostrando {{ $impresoras->firstItem() ?? 0 }}-{{ $impresoras->lastItem() ?? 0 }} de {{ $impresoras->total() }} registros</small>
+    </div>
+    <nav aria-label="Navegación de impresoras">
+        {{ $impresoras->onEachSide(1)->links('vendor.pagination.custom') }}
+    </nav>
+</div>
+
 <style>
     .btn-purple {
         background-color: #6f42c1;
@@ -70,5 +101,82 @@
         background-color: #5a36a0;
         color: white;
     }
+    
+    /* Revised search container styling */
+    .search-container {
+        width: 300px;
+        position: relative;
+    }
+    
+    .search-container .input-group-text {
+        border-top-left-radius: 20px;
+        border-bottom-left-radius: 20px;
+        border-right: none;
+    }
+    
+    .search-container .form-control {
+        border-left: none;
+        padding-left: 0;
+    }
+    
+    .search-container .form-control:focus {
+        box-shadow: none;
+        border-color: #ced4da;
+    }
+    
+    .search-container .clear-btn {
+        background-color: #6f42c1;
+        border-top-right-radius: 20px;
+        border-bottom-right-radius: 20px;
+        border: none;
+    }
+    
+    .text-purple {
+        color: #6f42c1;
+    }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchInput');
+    const clearSearch = document.getElementById('clearSearch');
+    let typingTimer;
+    const doneTypingInterval = 500;
+    
+    function performSearch() {
+        const searchTerm = searchInput.value.trim();
+        const url = new URL(window.location.href);
+        
+        if (searchTerm) {
+            url.searchParams.set('search', searchTerm);
+        } else {
+            url.searchParams.delete('search');
+        }
+        
+        window.location.href = url.toString();
+    }
+    
+    searchInput.addEventListener('keyup', function() {
+        clearTimeout(typingTimer);
+        if (searchInput.value) {
+            typingTimer = setTimeout(performSearch, doneTypingInterval);
+        }
+    });
+    
+    if (clearSearch) {
+        clearSearch.addEventListener('click', function() {
+            searchInput.value = '';
+            performSearch();
+        });
+    }
+    
+    searchInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            clearTimeout(typingTimer);
+            performSearch();
+        }
+    });
+});
+</script>
 @endsection

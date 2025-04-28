@@ -11,9 +11,11 @@ class CatalogoServicio extends Model
     protected $primaryKey = 'id_CatalogoServicio';
     public $incrementing = true;
     protected $keyType = 'int';
-    protected $cantidad_cobrada;
-    protected $diagnostico;
-    protected $estado_pago;
-    public $timestamps = true;
+    public $timestamps = false;
     protected $fillable = ['cantidad_cobrada','diagnostico','estado_pago',]; //comentario
+
+    public function detallesVenta()
+    {
+        return $this->hasMany(DetalleVentaServicio::class, 'id_CatalogoServicio');
+    }
 }

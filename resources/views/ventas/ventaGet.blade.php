@@ -25,49 +25,72 @@
 </div>
 
 <div class="row my-4">
-    <div class="col">
+    <div class="col-md-6">
         <h1>Ventas</h1>
     </div>
-    <div class="col-auto titlebar-commands">
-        <a class="btn btn-primary" href="{{ url('/ventas/agregar') }}">Agregar</a>
+    <div class="col-md-6">
+        <div class="d-flex justify-content-end gap-2">
+            <div class="input-group search-container">
+                <span class="input-group-text bg-white border-end-0">
+                    <i class="fas fa-search text-purple"></i>
+                </span>
+                <input 
+                    type="text" 
+                    id="searchInput" 
+                    class="form-control border-start-0" 
+                    placeholder="Buscar por nombre de empleado o ID..." 
+                    value="{{ $search ?? '' }}"
+                >
+                @if(isset($search) && !empty($search))
+                    <button type="button" class="btn text-white clear-btn" id="clearSearch">
+                        <i class="fas fa-times"></i>
+                    </button>
+                @endif
+            </div>
+            <a class="btn btn-purple" href="{{ url('/ventas/agregar') }}">
+                <i class="fas fa-plus me-1"></i> Agregar
+            </a>
+        </div>
     </div>
 </div>
 
 <div class="table-responsive">
-    <table class="table" id="maintable">
+    <table class="table table-striped" id="maintable">
         <thead class="bg-purple text-white">
             <tr>
-                <th>ID</th>
-                <th>ESTADO PAGO</th>
-                <th>FECHA</th>
-                <th>MÉTODO PAGO</th>
-                <th>MONTO</th>
-                <th>CLIENTE</th>
-                <th>EMPLEADO</th>
-                <th>IMPRESORA</th>
-                <th>ACCIONES</th>
+                <th class="text-nowrap" width="40">ID</th>
+                <th class="text-nowrap" width="100">ESTADO PAGO</th>
+                <th class="text-nowrap" width="100">FECHA</th>
+                <th class="text-nowrap" width="120">MÉTODO PAGO</th>
+                <th class="text-nowrap" width="100">MONTO</th>
+                <th class="text-nowrap">CLIENTE</th>
+                <th class="text-nowrap">EMPLEADO</th> 
+                <th class="text-nowrap">IMPRESORA</th>
+                <th class="text-nowrap" width="180">ACCIONES</th>
             </tr>
         </thead>
         <tbody>
             @forelse($ventas as $venta)
             <tr>
-                <td>{{ $venta->id_venta }}</td>
-                <td>
+                <td class="align-middle">{{ $venta->id_venta }}</td>
+                <td class="align-middle">
                     @if($venta->estado_pago)
                         <span class="badge" style="background-color: #6f42c1;">Pagado</span>
                     @else
                         <span class="badge bg-warning text-dark">Pendiente</span>
                     @endif
                 </td>
-                <td>{{ $venta->fecha_venta }}</td>
-                <td>{{ $venta->metodo_pago }}</td>
-                <td>${{ number_format($venta->monto_total, 2) }}</td>
-                <td>{{ $venta->cliente->nombre }}</td>
-                <td>{{ $venta->empleado->nombre }}</td>
-                <td>{{ $venta->impresora->modelo }}</td>
-                <td>
-                    <a href="{{ url('ventas/detalle/' . $venta->id_venta) }}" class="btn btn-sm text-white me-1" style="background-color: #6f42c1;">Ver Detalle</a>
-                    <a href="{{ url('ventas/editar/' . $venta->id_venta) }}" class="btn btn-sm text-white" style="background-color: #6f42c1;">Editar</a>
+                <td class="align-middle">{{ $venta->fecha_venta }}</td>
+                <td class="align-middle">{{ $venta->metodo_pago }}</td>
+                <td class="align-middle">${{ number_format($venta->monto_total, 2) }}</td>
+                <td class="align-middle text-truncate" style="max-width: 150px;">{{ $venta->cliente->nombre }}</td>
+                <td class="align-middle text-truncate" style="max-width: 150px;">{{ $venta->empleado->nombre }}</td>
+                <td class="align-middle text-truncate" style="max-width: 150px;">{{ $venta->impresora->modelo }}</td>
+                <td class="align-middle text-nowrap">
+                    <div class="d-flex gap-1">
+                        <a href="{{ url('ventas/detalle/' . $venta->id_venta) }}" class="btn btn-sm text-white" style="background-color: #6f42c1;">Ver Detalle</a>
+                        <a href="{{ url('ventas/editar/' . $venta->id_venta) }}" class="btn btn-sm text-white" style="background-color: #6f42c1;">Editar</a>
+                    </div>
                 </td>
             </tr>
             @empty
@@ -77,11 +100,61 @@
             @endforelse
         </tbody>
     </table>
+    
+    <!-- Clean pagination design -->
+    <div class="d-flex justify-content-between align-items-center border-top pt-3 mt-2">
+        <div>
+            <small class="text-muted">Mostrando {{ $ventas->firstItem() ?? 0 }}-{{ $ventas->lastItem() ?? 0 }} de {{ $ventas->total() }} registros</small>
+        </div>
+        <nav aria-label="Navegación de ventas">
+            {{ $ventas->onEachSide(1)->links('vendor.pagination.custom') }}
+        </nav>
+    </div>
 </div>
 
-<div class="mt-3">
-    {{ $ventas->links() }}
-</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchInput');
+    const clearSearch = document.getElementById('clearSearch');
+    let typingTimer;
+    const doneTypingInterval = 500;
+    
+    function performSearch() {
+        const searchTerm = searchInput.value.trim();
+        const url = new URL(window.location.href);
+        
+        if (searchTerm) {
+            url.searchParams.set('search', searchTerm);
+        } else {
+            url.searchParams.delete('search');
+        }
+        
+        window.location.href = url.toString();
+    }
+    
+    searchInput.addEventListener('keyup', function() {
+        clearTimeout(typingTimer);
+        if (searchInput.value) {
+            typingTimer = setTimeout(performSearch, doneTypingInterval);
+        }
+    });
+    
+    if (clearSearch) {
+        clearSearch.addEventListener('click', function() {
+            searchInput.value = '';
+            performSearch();
+        });
+    }
+    
+    searchInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            clearTimeout(typingTimer);
+            performSearch();
+        }
+    });
+});
+</script>
 
 <style>
     .btn-purple {
@@ -96,6 +169,60 @@
     .bg-purple {
         background-color: #6f42c1;
         color: white;
+    }
+    
+    /* Revised search container styling */
+    .search-container {
+        width: 300px;
+        position: relative;
+    }
+    
+    .search-container .input-group-text {
+        border-top-left-radius: 20px;
+        border-bottom-left-radius: 20px;
+        border-right: none;
+    }
+    
+    .search-container .form-control {
+        border-left: none;
+        padding-left: 0;
+    }
+    
+    .search-container .form-control:focus {
+        box-shadow: none;
+        border-color: #ced4da;
+    }
+    
+    .search-container .clear-btn {
+        background-color: #6f42c1;
+        border-top-right-radius: 20px;
+        border-bottom-right-radius: 20px;
+        border: none;
+    }
+    
+    .text-purple {
+        color: #6f42c1;
+    }
+    
+    /* Table specific styling */
+    #maintable th, #maintable td {
+        white-space: nowrap;
+        vertical-align: middle;
+    }
+    
+    /* For text that needs to be contained */
+    .text-truncate {
+        max-width: 150px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    
+    /* Ensure buttons stay put */
+    #maintable .btn {
+        white-space: nowrap;
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
     }
 </style>
 @endsection

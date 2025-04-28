@@ -91,9 +91,11 @@
                                             <select class="form-select servicio-select" name="servicios[0][id_CatalogoServicio]" required>
                                                 <option value="">Seleccionar servicio</option>
                                                 @foreach($servicios as $servicio)
-                                                    <option value="{{ $servicio->id_CatalogoServicio }}" data-precio="{{ $servicio->cantidad_cobrada }}" data-diagnostico="{{ $servicio->diagnostico }}">
-                                                        {{ $servicio->diagnostico }} - ${{ number_format($servicio->cantidad_cobrada, 2) }}
-                                                    </option>
+                                                    @if($servicio->estado_pago == 1)
+                                                        <option value="{{ $servicio->id_CatalogoServicio }}" data-precio="{{ $servicio->cantidad_cobrada }}" data-diagnostico="{{ $servicio->diagnostico }}">
+                                                            {{ $servicio->diagnostico }} - ${{ number_format($servicio->cantidad_cobrada, 2) }}
+                                                        </option>
+                                                    @endif
                                                 @endforeach
                                             </select>
                                         </td>
