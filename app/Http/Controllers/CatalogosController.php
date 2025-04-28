@@ -412,32 +412,21 @@ class CatalogosController extends Controller
         // Busca el empleado existente
         $empleado = Empleado::findOrFail($id_empleado);
 
-        // --- IMPORTANTE: Validación Omitida por Simplicidad ---
-        // Añadir validación aquí es crucial en una aplicación real.
-        // Por ejemplo, validar tipos de datos, campos requeridos, etc.
-        // $validatedData = $request->validate([
-        //     'nombre' => 'required|string|max:255',
-        //     'fecha_ingreso' => 'required|date',
-        //     'telefono' => 'required|string|max:20',
-        //     'rol' => 'required|string|max:50',
-        //     'estado' => 'required|boolean',
-        // ]);
-        // Y luego usar $validatedData['nombre'] en lugar de $request->input('nombre')
-        // -------------------------------------------------------
-
-        // Obtiene los datos del request (estilo manual)
-        $nombre = $request->input("nombre");
-        $fecha_ingreso = $request->input("fecha_ingreso");
-        $telefono = $request->input("telefono");
-        $rol = $request->input("rol");
-        $estado = $request->input("estado"); // Debería ser '1' o '0' desde el select
+        // Implementar validación real
+        $validatedData = $request->validate([
+            'nombre' => 'required|string|max:50',
+            'fecha_ingreso' => 'required|date',
+            'telefono' => 'required|string|max:15',
+            'rol' => 'required|string|max:50',
+            'estado' => 'required|in:0,1',
+        ]);
 
         // Actualiza los atributos del modelo Empleado
-        $empleado->nombre = strtoupper($nombre); // Consistente con tu AgregarPost
-        $empleado->fecha_ingreso = $fecha_ingreso;
-        $empleado->telefono = $telefono;
-        $empleado->rol = $rol;
-        $empleado->estado = $estado; // Actualiza el estado
+        $empleado->nombre = strtoupper($validatedData['nombre']);
+        $empleado->fecha_ingreso = $validatedData['fecha_ingreso'];
+        $empleado->telefono = $validatedData['telefono'];
+        $empleado->rol = $validatedData['rol'];
+        $empleado->estado = $validatedData['estado'];
 
         // Guarda los cambios
         $empleado->save();
@@ -477,30 +466,24 @@ class CatalogosController extends Controller
         // Busca el cliente existente o falla si no existe
         $cliente = Cliente::findOrFail($id_cliente);
 
-        // --- IMPORTANTE: Validación Omitida por Simplicidad ---
-        // Aquí deberías validar los datos ($request->validate([...])).
-        // Especialmente, al validar 'email', asegúrate de que sea único
-        // pero ignorando el email del cliente actual. Ejemplo:
-        // 'email' => 'required|email|max:255|unique:cliente,email,' . $id_cliente . ',id_cliente'
-        // -------------------------------------------------------
-
-        // Obtiene los datos del request (siguiendo tu estilo)
-        $nombre = $request->input("nombre");
-        $telefono = $request->input("telefono");
-        $email = $request->input("email");
-        $rfc = $request->input("RFC");
+        // Implementar validación real
+        $validatedData = $request->validate([
+            'nombre' => 'required|string|max:50',
+            'telefono' => 'required|string|max:15',
+            'email' => 'required|email|max:50|unique:cliente,email,' . $id_cliente . ',id_cliente',
+            'RFC' => 'required|string|max:20|unique:cliente,RFC,' . $id_cliente . ',id_cliente',
+        ]);
 
         // Actualiza los atributos del modelo Cliente
-        $cliente->nombre = $nombre; // Podrías usar strtoupper($nombre) si quieres
-        $cliente->telefono = $telefono;
-        $cliente->email = $email;
-        $cliente->RFC = $rfc;
+        $cliente->nombre = $validatedData['nombre'];
+        $cliente->telefono = $validatedData['telefono'];
+        $cliente->email = $validatedData['email'];
+        $cliente->RFC = $validatedData['RFC'];
 
         // Guarda los cambios en la base de datos
         $cliente->save();
 
         // Redirige de vuelta a la lista de clientes con un mensaje de éxito
         return redirect('/catalogos/clientes')->with('success', 'Cliente actualizado exitosamente.');
-        // El ->with(...) es opcional, pero útil para mostrar mensajes al usuario.
     }
 }
