@@ -150,6 +150,39 @@ class CatalogosController extends Controller
         return redirect("/catalogos/impresoras");
     }
 
+    public function impresorasEditarGet($id): View
+    {
+        $impresora = Impresora::findOrFail($id);
+        
+        return view('catalogos/impresorasEditarGet', [
+            'impresora' => $impresora,
+            "breadcrumbs" => [
+                "Inicio" => url("/homeApp"),
+                "Impresoras" => url("/catalogos/impresoras"),
+                "Editar" => url("/catalogos/impresoras/editar/{$id}")
+            ]
+        ]);
+    }
+
+    public function impresorasEditarPost(Request $request, $id): RedirectResponse
+    {
+        $impresora = Impresora::findOrFail($id);
+        
+        $modelo = $request->input("modelo");
+        $numero_serie = $request->input("numero_serie");
+        $fecha_entrada = $request->input("fecha_entrada");
+        $fecha_salida = $request->input("fecha_salida"); // Será null si no se envía
+        
+        $impresora->modelo = $modelo;
+        $impresora->numero_serie = $numero_serie;
+        $impresora->fecha_entrada = $fecha_entrada;
+        $impresora->fecha_salida = $fecha_salida;
+        
+        $impresora->save();
+
+        return redirect("/catalogos/impresoras")->with('success', 'Impresora actualizada correctamente');
+    }
+
     public function serviciosGet(): View
     {
         $servicios = CatalogoServicio::all();
@@ -188,6 +221,38 @@ class CatalogosController extends Controller
 
         return redirect("/catalogos/servicios");
     }
+
+    public function serviciosEditarGet($id): View
+    {
+        $servicio = CatalogoServicio::findOrFail($id);
+        
+        return view('catalogos/serviciosEditarGet', [
+            'servicio' => $servicio,
+            "breadcrumbs" => [
+                "Inicio" => url("/homeApp"),
+                "Servicios" => url("/catalogos/servicios"),
+                "Editar" => url("/catalogos/servicios/editar/{$id}")
+            ]
+        ]);
+    }
+
+    public function serviciosEditarPost(Request $request, $id): RedirectResponse
+    {
+        $servicio = CatalogoServicio::findOrFail($id);
+        
+        $cantidad_cobrada = $request->input("cantidad_cobrada");
+        $diagnostico = $request->input("diagnostico");
+        $estado_pago = $request->input("estado_pago");
+        
+        $servicio->cantidad_cobrada = $cantidad_cobrada;
+        $servicio->diagnostico = $diagnostico;
+        $servicio->estado_pago = $estado_pago;
+        
+        $servicio->save();
+
+        return redirect("/catalogos/servicios")->with('success', 'Servicio actualizado correctamente');
+    }
+
     public function ventasGet(): View
     {
         $ventas = Venta::with(['cliente', 'empleado', 'impresora'])
@@ -255,6 +320,13 @@ class CatalogosController extends Controller
             ]);
 
             $venta->save();
+            
+            // Actualizar la fecha de salida de la impresora si está vacía
+            $impresora = Impresora::find($request->input('id_impresora'));
+            if ($impresora && $impresora->fecha_salida === null) {
+                $impresora->fecha_salida = $request->input('fecha_venta');
+                $impresora->save();
+            }
 
             // Guardar los detalles de servicios
             $serviciosGuardados = 0;

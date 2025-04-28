@@ -28,6 +28,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/catalogos/empleados/agregar', [CatalogosController::class, 'empleadosAgregarGet']);
     Route::get('/catalogos/impresoras/agregar', [CatalogosController::class, 'impresorasAgregarGet']);
     Route::get('/catalogos/servicios/agregar', [CatalogosController::class, 'serviciosAgregarGet']);
+    
+    // CATALOGOS - FORMULARIOS EDITAR (Agregamos rutas de edición)
+    Route::get('/catalogos/impresoras/editar/{id}', [CatalogosController::class, 'impresorasEditarGet']);
+    Route::post('/catalogos/impresoras/editar/{id}', [CatalogosController::class, 'impresorasEditarPost']);
+    Route::get('/catalogos/servicios/editar/{id}', [CatalogosController::class, 'serviciosEditarGet']);
+    Route::post('/catalogos/servicios/editar/{id}', [CatalogosController::class, 'serviciosEditarPost']);
 
     // CATALOGOS - POST (GUARDAR)
     Route::post('/catalogos/clientes/agregar', [CatalogosController::class, 'clientesAgregarPost']);

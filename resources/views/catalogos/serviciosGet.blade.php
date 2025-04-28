@@ -17,9 +17,9 @@
     <thead>
         <tr>
             <th scope="col">ID</th>
-            <th scope="col">SERVICIO</th>
-            <th scope="col">COSTO</th>
-            <th scope="col">ACTIVO</th>
+            <th scope="col">DIAGNÓSTICO</th>
+            <th scope="col">MONTO</th>
+            <th scope="col">ESTADO</th>
             <th scope="col">ACCIONES</th> <!-- Nuevo encabezado -->
         </tr>
     </thead>
@@ -29,7 +29,7 @@
                 <td>{{ $servicio->id_CatalogoServicio }}</td>
                 <td>{{ $servicio->diagnostico }}</td>
                 <td>${{ number_format($servicio->cantidad_cobrada, 2) }}</td>
-                <td>{{ $servicio->estado_pago ? 'Sí' : 'No' }}</td>
+                <td>{{ $servicio->estado_pago ? 'Activo' : 'Inactivo' }}</td>
                 <td>
                     <a href="{{ url('/catalogos/servicios/editar/' . $servicio->id_CatalogoServicio) }}" class="btn btn-sm text-white" style="background-color: #6f42c1;">Editar</a>
                 </td> <!-- Botón Editar en morado -->

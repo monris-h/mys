@@ -14,13 +14,14 @@
 </div>
 
 <table class="table" id="maintable">
-    <thead>
+    <thead class="bg-purple text-white">
         <tr>
             <th scope="col">ID</th>
             <th scope="col">MODELO</th>
             <th scope="col">NÚMERO DE SERIE</th>
             <th scope="col">FECHA ENTRADA</th>
             <th scope="col">FECHA SALIDA</th>
+            <th scope="col">ACCIONES</th> <!-- Nuevo encabezado -->
         </tr>
     </thead>
     <tbody>
@@ -31,6 +32,9 @@
                 <td>{{ $impresora->numero_serie }}</td>
                 <td>{{ $impresora->fecha_entrada }}</td>
                 <td>{{ $impresora->fecha_salida ?? 'Pendiente' }}</td>
+                <td>
+                    <a href="{{ url('/catalogos/impresoras/editar/' . $impresora->id_impresora) }}" class="btn btn-sm text-white" style="background-color: #6f42c1;">Editar</a>
+                </td> <!-- Botón Editar en morado -->
             </tr>
         @endforeach
     </tbody>
