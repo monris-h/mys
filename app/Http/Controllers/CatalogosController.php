@@ -364,8 +364,10 @@ class CatalogosController extends Controller
                             ->orWhere('estado', '1')
                             ->get();
                             
-        // Solo mostrar impresoras disponibles (sin fecha de salida)
-        $impresoras = Impresora::whereNull('fecha_salida')->get();
+        // Asegurar que solo se muestren impresoras disponibles (sin fecha de salida)
+        $impresoras = Impresora::whereNull('fecha_salida')
+                              ->orderBy('modelo')
+                              ->get();
         
         // Solo servicios activos
         $servicios = CatalogoServicio::where('estado_pago', 1)->get();

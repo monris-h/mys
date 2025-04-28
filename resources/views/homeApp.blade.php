@@ -7,7 +7,7 @@
             <div class="card shadow-sm border-0 mb-4">
                 <div class="card-body p-4">
                     <h1 class="display-5 mb-3 text-center">Bienvenido: {{ Auth::user()->name }}</h1>
-
+                    <br>
                     <!-- Acciones Rápidas (Movido hacia arriba) -->
                     <h2 class="h4 mb-3 mt-2">Acciones Rápidas</h2>
                     <div class="row">
@@ -36,9 +36,9 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- Ventas (Simplificado) -->
-                    <div class="mt-3">
+                    <br>
+                     <!-- Ventas (Simplificado) -->
+                     <div class="mt-3">
                         <div class="access-card-compact">
                             <div class="icon-container-sm">
                                 <i class="fas fa-file-invoice-dollar"></i>
@@ -52,8 +52,65 @@
                             </div>
                         </div>
                     </div>
+                    <!-- Métricas rápidas -->
+                    <div class="row mb-4">
+                        <div class="col-md-4 mb-3">
+                            <div class="card bg-white shadow-sm h-100">
+                                <div class="card-body text-center p-4">
+                                    <div class="display-4 text-purple">${{ number_format($ventasMesActual, 0) }}</div>
+                                    <h5 class="text-muted">Ventas de {{ $mesActualNombre }} {{ $añoActual }}</h5>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="card bg-white shadow-sm h-100">
+                                <div class="card-body text-center p-4">
+                                    <div class="display-4 text-purple">${{ number_format($totalHistorico, 0) }}</div>
+                                    <h5 class="text-muted">Total Ventas</h5>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="card bg-white shadow-sm h-100">
+                                <div class="card-body text-center p-4">
+                                    <div class="display-4 text-purple">{{ $ventasPendientes }}</div>
+                                    <h5 class="text-muted">Pagos Pendientes</h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Gráfica de ventas -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-purple text-white py-3">
+                            <h5 class="mb-0">Ventas Mensuales - {{ date('Y') }}</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="ventasChart" height="300"></canvas>
+                        </div>
+                    </div>
 
-                    <div class="text-center mt-3">
+
+
+                    <!-- Reportes (Nuevo) -->
+                    <div class="mt-3">
+                        <div class="access-card-compact">
+                            <div class="icon-container-sm">
+                                <i class="fas fa-chart-bar"></i>
+                            </div>
+                            <div class="content">
+                                <h3>Reportes del Taller</h3>
+                                <p>Consulta informes del taller</p>
+                            </div>
+                            <div class="action">
+                                <a href="{{ url('/reportes') }}" class="btn btn-light text-purple rounded-pill px-4">Ver reportes</a>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+            <div class="text-center mt-3">
                         <form method="POST" action="{{ route('logout') }}" class="d-inline">
                             @csrf
                             <button type="submit" class="btn btn-outline-danger rounded-pill px-4">
@@ -61,8 +118,6 @@
                             </button>
                         </form>
                     </div>
-                </div>
-            </div>
         </div>
     </div>
 </div>
@@ -355,4 +410,70 @@
         }
     }
 </style>
+
+<!-- Añadir Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        try {
+            // Datos para la gráfica
+            var ventasData = {!! $ventasPorMes !!};
+            console.log("Datos de ventas:", ventasData); // Para depuración
+            
+            // Extracción de datos para Chart.js
+            var meses = ventasData.map(item => item.mes);
+            var totales = ventasData.map(item => item.total);
+            
+            // Configuración de la gráfica
+            var ctx = document.getElementById('ventasChart').getContext('2d');
+            var ventasChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: meses,
+                    datasets: [{
+                        label: 'Ventas ($)',
+                        data: totales,
+                        backgroundColor: 'rgba(111, 66, 193, 0.7)',
+                        borderColor: '#6f42c1',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString();
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return '$' + context.raw.toLocaleString();
+                                }
+                            }
+                        },
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        },
+                        title: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        } catch (error) {
+            console.error("Error al crear el gráfico:", error);
+            document.getElementById('ventasChart').parentNode.innerHTML = 
+                '<div class="alert alert-warning">No se pudieron cargar los datos de ventas. Por favor, intente nuevamente.</div>';
+        }
+    });
+</script>
 @endsection

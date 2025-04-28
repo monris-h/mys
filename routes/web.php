@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CatalogosController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\ReportesController; 
+use App\Http\Controllers\HomeController;
 
 // Rutas públicas
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
@@ -15,8 +17,8 @@ Route::get('/', [CatalogosController::class, 'home'])->name('home');
 
 // 🛡️ Rutas protegidas: SOLO si el usuario está logueado
 Route::middleware(['auth'])->group(function () {
-    Route::get('/homeApp', function () {return view('homeApp');})->middleware('auth');
-
+    Route::get('/homeApp', [HomeController::class, 'index']);
+    
     // CATALOGOS - GET
     Route::get('/catalogos/clientes', [CatalogosController::class, 'clientesGet']);
     Route::get('/catalogos/empleados', [CatalogosController::class, 'empleadosGet']);
@@ -58,4 +60,12 @@ Route::middleware(['auth'])->group(function () {
     // Ventas - Editar
     Route::get('/ventas/editar/{id}', [CatalogosController::class, 'ventasEditarGet']);
     Route::post('/ventas/editar/{id}', [CatalogosController::class, 'ventasEditarPost']);
+});
+
+// Rutas para Reportes
+Route::middleware(['auth'])->group(function () {
+    Route::get('/reportes', [ReportesController::class, 'index']);
+    Route::get('/reportes/historial-reparaciones', [ReportesController::class, 'historialReparaciones']);
+    Route::get('/reportes/impresoras-pendientes', [ReportesController::class, 'impresorasPendientes']);
+    Route::get('/reportes/ingresos-servicios', [ReportesController::class, 'ingresosServicios']);
 });
