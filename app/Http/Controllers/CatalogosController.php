@@ -12,6 +12,7 @@ use App\Models\DetalleVentaServicio;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\DB;
 
 class CatalogosController extends Controller
 {
@@ -364,13 +365,11 @@ class CatalogosController extends Controller
                             ->orWhere('estado', '1')
                             ->get();
                             
-        // Asegurar que solo se muestren impresoras disponibles (sin fecha de salida)
-        $impresoras = Impresora::whereNull('fecha_salida')
-                              ->orderBy('modelo')
-                              ->get();
-        
-        // Solo servicios activos
-        $servicios = CatalogoServicio::where('estado_pago', 1)->get();
+
+        $impresoras = Impresora::orderBy('modelo')->get();
+
+        $servicios = CatalogoServicio::where('estado_pago', 1)->get(); 
+
 
         return view('ventas/ventasAgregarGet', [
             'clientes' => $clientes,
@@ -620,5 +619,28 @@ class CatalogosController extends Controller
         }
         
         return redirect('/ventas')->with('error', 'No se puede editar una venta que ya ha sido pagada');
+    }
+
+    public function ventasDestroy(int $id_venta): RedirectResponse
+    {
+        $venta = Venta::findOrFail($id_venta);
+        DB::beginTransaction();
+
+        try {
+            DetalleVentaServicio::where('id_venta', $id_venta)->delete();
+            Factura::where('id_venta', $id_venta)->delete();
+
+            $venta->delete();
+
+            DB::commit();
+
+            return redirect('/ventas')->with('success', 'Venta eliminada correctamente.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error("Error al eliminar venta {$id_venta}: " . $e->getMessage());
+
+            return redirect('/ventas')->with('error', 'Ocurrió un error al intentar eliminar la venta.');
+        }
     }
 }

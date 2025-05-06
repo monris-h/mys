@@ -11,28 +11,34 @@
                     <!-- Acciones Rápidas (Movido hacia arriba) -->
                     <h2 class="h4 mb-3 mt-2">Acciones Rápidas</h2>
                     <div class="row">
-                        <div class="col-md-3 mb-3">
+                        <div class="col-md col-12 mb-3">
                             <div class="team-card text-center">
                                 <i class="fas fa-user-friends mb-2"></i>
                                 <h5><a href="{{ url('/catalogos/clientes') }}"><strong style="color: #6f42c1;">Clientes</strong></a></h5>
                             </div>
                         </div>
-                        <div class="col-md-3 mb-3">
+                        <div class="col-md col-12 mb-3">
                             <div class="team-card text-center">
                                 <i class="fas fa-users-cog mb-2"></i>
                                 <h5><a href="{{ url('/catalogos/empleados') }}"><strong style="color: #6f42c1;">Empleados</strong></a></h5>
                             </div>
                         </div>
-                        <div class="col-md-3 mb-3">
+                        <div class="col-md col-12 mb-3">
                             <div class="team-card text-center">
                                 <i class="fas fa-print mb-2"></i>
                                 <h5><a href="{{ url('/catalogos/impresoras') }}"><strong style="color: #6f42c1;">Impresoras</strong></a></h5>
                             </div>
                         </div>
-                        <div class="col-md-3 mb-3">
+                        <div class="col-md col-12 mb-3">
                             <div class="team-card text-center">
                                 <i class="fas fa-cogs mb-2"></i>
                                 <h5><a href="{{ url('/catalogos/servicios') }}"><strong style="color: #6f42c1;">Servicios</strong></a></h5>
+                            </div>
+                        </div>
+                        <div class="col-md col-12 mb-3">
+                            <div class="team-card text-center">
+                                <i class="fas fa-chart-line mb-2"></i>
+                                <h5><a href="{{ url('/reportes') }}"><strong style="color: #6f42c1;">Reportes</strong></a></h5>
                             </div>
                         </div>
                     </div>
@@ -110,14 +116,6 @@
 
                 </div>
             </div>
-            <div class="text-center mt-3">
-                        <form method="POST" action="{{ route('logout') }}" class="d-inline">
-                            @csrf
-                            <button type="submit" class="btn btn-outline-danger rounded-pill px-4">
-                                <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
-                            </button>
-                        </form>
-                    </div>
         </div>
     </div>
 </div>

@@ -3,31 +3,19 @@
         <h1 class="h4 mb-0"><a href="{{ url('/homeApp') }}" class="text-white text-decoration-none">Taller MYS</a></h1>
         
         @auth
-        <!-- Elementos visibles solo para usuarios autenticados -->
-        <nav class="nav">
-            <!-- Botón para Agregar Venta -->
-            <a href="{{ url('/ventas/agregar') }}" class="btn btn-light text-purple me-3">
-                <strong>+</strong> Agregar Venta
-            </a>
-            <!-- Botón dropdown para Opciones -->
-            <div class="dropdown ms-3">
-                <button class="btn btn-light text-purple dropdown-toggle" type="button" id="opcionesDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                    Opciones
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="opcionesDropdown">
-                    <li><a class="dropdown-item" href="{{ url('/reportes') }}">Reportes</a></li>
-                    <li>
-                        <a class="dropdown-item text-danger text-decoration-underline" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                            Salir
-                        </a>
-                        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                            @csrf
-                        </form>
-                    </li>
-                </ul>
-            </div>
-        </nav>
+        <nav class="nav align-items-center">
+        <a href="{{ url('/ventas/agregar') }}" class="btn btn-light text-purple me-3">
+            <strong>+</strong> Agregar Venta
+        </a>
 
+        <form method="POST" action="{{ route('logout') }}" class="ms-3">
+            @csrf
+            <button type="submit" class="btn btn-danger">
+                <i class="fas fa-sign-out-alt me-1" style="color: white;"></i>
+                 Cerrar Sesión
+            </button>
+        </form>
+    </nav>
         @endauth
     </div>
 </header>

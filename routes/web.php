@@ -60,6 +60,9 @@ Route::middleware(['auth'])->group(function () {
     // Ventas - Editar
     Route::get('/ventas/editar/{id}', [CatalogosController::class, 'ventasEditarGet']);
     Route::post('/ventas/editar/{id}', [CatalogosController::class, 'ventasEditarPost']);
+
+    // Ventas - Eliminar
+    Route::delete('/ventas/{id_venta}', [CatalogosController::class, 'ventasDestroy'])->name('ventas.destroy');
 });
 
 // Rutas para Reportes

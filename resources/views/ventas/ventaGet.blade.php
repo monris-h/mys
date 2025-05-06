@@ -21,6 +21,7 @@
         <a href="{{ url('/ventas') }}" class="btn btn-sm {{ request()->is('ventas*') ? 'btn-purple' : 'btn-outline-secondary' }}">
             <i class="fas fa-file-invoice-dollar"></i> Ventas
         </a>
+        
     </div>
 </div>
 
@@ -90,6 +91,13 @@
                     <div class="d-flex gap-1">
                         <a href="{{ url('ventas/detalle/' . $venta->id_venta) }}" class="btn btn-sm text-white" style="background-color: #6f42c1;">Ver Detalle</a>
                         <a href="{{ url('ventas/editar/' . $venta->id_venta) }}" class="btn btn-sm text-white" style="background-color: #6f42c1;">Editar</a>
+                        <form method="POST" action="{{ url('ventas/' . $venta->id_venta) }}" style="display: inline;" onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta venta (ID: {{ $venta->id_venta }})? Esta acción no se puede deshacer.');">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-sm btn-danger">
+                                Eliminar
+                            </button>
+                        </form>
                     </div>
                 </td>
             </tr>
