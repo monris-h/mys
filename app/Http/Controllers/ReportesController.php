@@ -17,12 +17,81 @@ class ReportesController extends Controller
      */
     public function index(): View
     {
-        return view('reportes.index', [
-            "breadcrumbs" => [
-                "Inicio" => url("/homeApp"),
-                "Reportes" => url("/reportes")
-            ]
-        ]);
+        try {
+            // Obtener datos para la gráfica de ventas
+            $ventasPorMes = $this->getVentasPorMes();
+            
+            return view('reportes.index', [
+                "ventasPorMes" => json_encode($ventasPorMes),
+                "breadcrumbs" => [
+                    "Inicio" => url("/homeApp"),
+                    "Reportes" => url("/reportes")
+                ]
+            ]);
+        } catch (\Exception $e) {
+            \Log::error("Error en ReportesController: " . $e->getMessage());
+            return view('reportes.index', [
+                "ventasPorMes" => json_encode([]),
+                "error" => 'No se pudieron cargar los datos correctamente',
+                "breadcrumbs" => [
+                    "Inicio" => url("/homeApp"),
+                    "Reportes" => url("/reportes")
+                ]
+            ]);
+        }
+    }
+    
+    /**
+     * Obtener datos de ventas agrupados por mes para la gráfica
+     */
+    private function getVentasPorMes()
+    {
+        $año = now()->year;
+        
+        try {
+            // Consulta para obtener el monto total de ventas por mes
+            $ventasPorMes = DB::table('venta')
+                ->select(
+                    DB::raw('MONTH(fecha_venta) as mes'),
+                    DB::raw('SUM(monto_total) as total')
+                )
+                ->whereYear('fecha_venta', $año)
+                ->groupBy('mes')
+                ->orderBy('mes')
+                ->get();
+                
+            // Crear array con todos los meses (1-12)
+            $datosCompletos = [];
+            $nombresMeses = [
+                'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+                'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+            ];
+            
+            // Inicializar con ceros
+            foreach ($nombresMeses as $index => $nombre) {
+                $datosCompletos[$index] = [
+                    'mes' => $nombre,
+                    'total' => 0
+                ];
+            }
+            
+            // Llenar con datos reales donde existan
+            foreach ($ventasPorMes as $venta) {
+                $indice = $venta->mes - 1; // Ajustar para índice base 0
+                if (isset($datosCompletos[$indice])) {
+                    $datosCompletos[$indice]['total'] = (float)$venta->total;
+                }
+            }
+            
+            // Convertir a array indexado para Chart.js
+            $resultado = array_values($datosCompletos);
+            
+            return $resultado;
+        } catch (\Exception $e) {
+            \Log::error("Error obteniendo datos de ventas: " . $e->getMessage());
+            // Devolver array vacío en caso de error
+            return [];
+        }
     }
     
     /**
