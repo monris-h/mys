@@ -32,7 +32,8 @@
 
                         <div class="mb-3">
                             <label for="fecha_entrada" class="form-label">Fecha de Entrada:</label>
-                            <input type="date" class="form-control @error('fecha_entrada') is-invalid @enderror" id="fecha_entrada" name="fecha_entrada" value="{{ old('fecha_entrada') }}" required>
+                            <input type="date" class="form-control @error('fecha_entrada') is-invalid @enderror" id="fecha_entrada" name="fecha_entrada" value="{{ old('fecha_entrada') }}" max="{{ date('Y-m-d') }}" required>
+                            <small class="text-muted">La fecha de entrada no puede ser posterior a la fecha actual</small>
                             @error('fecha_entrada')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -40,7 +41,8 @@
 
                         <div class="mb-3">
                             <label for="fecha_salida" class="form-label">Fecha de Salida (Opcional):</label>
-                            <input type="date" class="form-control @error('fecha_salida') is-invalid @enderror" id="fecha_salida" name="fecha_salida" value="{{ old('fecha_salida') }}">
+                            <input type="date" class="form-control @error('fecha_salida') is-invalid @enderror" id="fecha_salida" name="fecha_salida" value="{{ old('fecha_salida') }}" min="{{ date('Y-m-d') }}">
+                            <small class="text-muted">La fecha de salida no puede ser anterior a la fecha actual</small>
                             @error('fecha_salida')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror

@@ -67,10 +67,12 @@ class CatalogosController extends Controller
             'nombre' => 'required|string|max:50',
             'telefono' => 'required|string|max:15',
             'email' => 'required|email|max:50|unique:cliente,email',
-            'RFC' => 'required|string|max:20|unique:cliente,RFC'
+            'RFC' => 'required|string|max:13|alpha_num|unique:cliente,RFC'
         ], [
             'email.unique' => 'Este correo electrónico ya está registrado para otro cliente.',
-            'RFC.unique' => 'Este RFC ya está registrado para otro cliente.'
+            'RFC.unique' => 'Este RFC ya está registrado para otro cliente.',
+            'RFC.max' => 'El RFC debe contener máximo 13 caracteres.',
+            'RFC.alpha_num' => 'El RFC solo debe contener letras y números.'
         ]);
 
         // Crear el cliente con los datos validados
@@ -127,22 +129,27 @@ class CatalogosController extends Controller
 
     public function empleadosAgregarPost(Request $request): RedirectResponse
     {
-        $nombre = $request->input("nombre");
-        $estado = $request->input("estado");
-        $fecha_ingreso = $request->input("fecha_ingreso");
-        $telefono = $request->input("telefono");
-        $rol = $request->input("rol");
+        // Validación de datos de empleado
+        $validatedData = $request->validate([
+            'nombre' => 'required|string|max:50',
+            'fecha_ingreso' => 'required|date|before_or_equal:today',
+            'telefono' => 'required|string|max:15',
+            'rol' => 'required|string|max:50',
+            'estado' => 'required|in:0,1',
+        ], [
+            'fecha_ingreso.before_or_equal' => 'La fecha de ingreso no puede ser posterior a la fecha actual.'
+        ]);
 
         $empleado = new Empleado([
-            "nombre" => strtoupper($nombre),
-            "estado" => $estado,
-            "fecha_ingreso" => $fecha_ingreso,
-            "telefono" => $telefono,
-            "rol" => $rol
+            "nombre" => strtoupper($validatedData['nombre']),
+            "estado" => $validatedData['estado'],
+            "fecha_ingreso" => $validatedData['fecha_ingreso'],
+            "telefono" => $validatedData['telefono'],
+            "rol" => $validatedData['rol']
         ]);
         $empleado->save();
 
-        return redirect("/catalogos/empleados");
+        return redirect("/catalogos/empleados")->with('success', 'Empleado agregado correctamente');
     }
 
     public function impresorasGet(Request $request): View
@@ -186,10 +193,12 @@ class CatalogosController extends Controller
         $validatedData = $request->validate([
             'modelo' => 'required|string|max:50',
             'numero_serie' => 'required|string|max:50|unique:impresora,numero_serie',
-            'fecha_entrada' => 'required|date',
-            'fecha_salida' => 'nullable|date'
+            'fecha_entrada' => 'required|date|before_or_equal:today',
+            'fecha_salida' => 'nullable|date|after_or_equal:today'
         ], [
-            'numero_serie.unique' => 'Este número de serie ya está registrado para otra impresora.'
+            'numero_serie.unique' => 'Este número de serie ya está registrado para otra impresora.',
+            'fecha_entrada.before_or_equal' => 'La fecha de entrada no puede ser posterior a la fecha actual.',
+            'fecha_salida.after_or_equal' => 'La fecha de salida no puede ser anterior a la fecha actual.'
         ]);
 
         // Crear el objeto con datos validados
@@ -227,10 +236,12 @@ class CatalogosController extends Controller
         $validatedData = $request->validate([
             'modelo' => 'required|string|max:50',
             'numero_serie' => 'required|string|max:50|unique:impresora,numero_serie,'.$id.',id_impresora',
-            'fecha_entrada' => 'required|date',
-            'fecha_salida' => 'nullable|date'
+            'fecha_entrada' => 'required|date|before_or_equal:today',
+            'fecha_salida' => 'nullable|date|after_or_equal:today'
         ], [
-            'numero_serie.unique' => 'Este número de serie ya está registrado para otra impresora.'
+            'numero_serie.unique' => 'Este número de serie ya está registrado para otra impresora.',
+            'fecha_entrada.before_or_equal' => 'La fecha de entrada no puede ser posterior a la fecha actual.',
+            'fecha_salida.after_or_equal' => 'La fecha de salida no puede ser anterior a la fecha actual.'
         ]);
         
         // Actualizar con datos validados
@@ -511,10 +522,12 @@ class CatalogosController extends Controller
         // Implementar validación real
         $validatedData = $request->validate([
             'nombre' => 'required|string|max:50',
-            'fecha_ingreso' => 'required|date',
+            'fecha_ingreso' => 'required|date|before_or_equal:today',
             'telefono' => 'required|string|max:15',
             'rol' => 'required|string|max:50',
             'estado' => 'required|in:0,1',
+        ], [
+            'fecha_ingreso.before_or_equal' => 'La fecha de ingreso no puede ser posterior a la fecha actual.'
         ]);
 
         // Actualiza los atributos del modelo Empleado
@@ -567,7 +580,12 @@ class CatalogosController extends Controller
             'nombre' => 'required|string|max:50',
             'telefono' => 'required|string|max:15',
             'email' => 'required|email|max:50|unique:cliente,email,' . $id_cliente . ',id_cliente',
-            'RFC' => 'required|string|max:20|unique:cliente,RFC,' . $id_cliente . ',id_cliente',
+            'RFC' => 'required|string|max:13|alpha_num|unique:cliente,RFC,' . $id_cliente . ',id_cliente',
+        ], [
+            'RFC.max' => 'El RFC debe contener máximo 13 caracteres.',
+            'RFC.alpha_num' => 'El RFC solo debe contener letras y números.',
+            'email.unique' => 'Este correo electrónico ya está registrado para otro cliente.',
+            'RFC.unique' => 'Este RFC ya está registrado para otro cliente.'
         ]);
 
         // Actualiza los atributos del modelo Cliente

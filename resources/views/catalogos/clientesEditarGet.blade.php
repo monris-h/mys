@@ -42,7 +42,8 @@
 
                         <div class="mb-3">
                             <label for="RFC" class="form-label">RFC:</label>
-                            <input type="text" class="form-control @error('RFC') is-invalid @enderror" id="RFC" name="RFC" value="{{ old('RFC', $cliente->RFC) }}">
+                            <input type="text" class="form-control @error('RFC') is-invalid @enderror" id="RFC" name="RFC" value="{{ old('RFC', $cliente->RFC) }}" maxlength="13" pattern="[A-Za-z0-9]{1,13}" title="El RFC debe contener máximo 13 caracteres alfanuméricos">
+                            <small class="text-muted">Máximo 13 caracteres alfanuméricos</small>
                             @error('RFC')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror

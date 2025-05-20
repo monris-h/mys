@@ -24,7 +24,8 @@
 
                         <div class="mb-3">
                             <label for="fecha_ingreso" class="form-label">Fecha de Ingreso:</label>
-                            <input type="date" class="form-control @error('fecha_ingreso') is-invalid @enderror" id="fecha_ingreso" name="fecha_ingreso" value="{{ old('fecha_ingreso') }}" required>
+                            <input type="date" class="form-control @error('fecha_ingreso') is-invalid @enderror" id="fecha_ingreso" name="fecha_ingreso" value="{{ old('fecha_ingreso') }}" max="{{ date('Y-m-d') }}" required>
+                            <small class="text-muted">La fecha de ingreso no puede ser posterior a la fecha actual</small>
                             @error('fecha_ingreso')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror

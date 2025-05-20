@@ -30,11 +30,10 @@
                             @error('numero_serie')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
-                        </div>
-
-                        <div class="mb-3">
+                        </div>                        <div class="mb-3">
                             <label for="fecha_entrada" class="form-label">Fecha de Entrada:</label>
-                            <input type="date" class="form-control @error('fecha_entrada') is-invalid @enderror" id="fecha_entrada" name="fecha_entrada" value="{{ old('fecha_entrada', $impresora->fecha_entrada) }}" required>
+                            <input type="date" class="form-control @error('fecha_entrada') is-invalid @enderror" id="fecha_entrada" name="fecha_entrada" value="{{ old('fecha_entrada', $impresora->fecha_entrada) }}" max="{{ date('Y-m-d') }}" required>
+                            <small class="text-muted">La fecha de entrada no puede ser posterior a la fecha actual</small>
                             @error('fecha_entrada')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -43,7 +42,8 @@
                         <div class="mb-3">
                             <label for="fecha_salida" class="form-label">Fecha de Salida (Opcional):</label>
                             <div class="input-group">
-                                <input type="date" class="form-control @error('fecha_salida') is-invalid @enderror" id="fecha_salida" name="fecha_salida" value="{{ old('fecha_salida', $impresora->fecha_salida) }}">
+                                <input type="date" class="form-control @error('fecha_salida') is-invalid @enderror" id="fecha_salida" name="fecha_salida" value="{{ old('fecha_salida', $impresora->fecha_salida) }}" min="{{ date('Y-m-d') }}">
+                                <small class="text-muted d-block w-100">La fecha de salida no puede ser anterior a la fecha actual</small>>
                                 <button type="button" class="btn btn-outline-secondary" onclick="document.getElementById('fecha_salida').value = '';">
                                     <i class="fas fa-broom me-1"></i> Limpiar
                                 </button>

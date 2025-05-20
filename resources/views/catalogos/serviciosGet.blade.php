@@ -22,6 +22,9 @@
         <a href="{{ url('/ventas') }}" class="btn btn-sm {{ request()->is('ventas*') ? 'btn-purple' : 'btn-outline-secondary' }}">
             <i class="fas fa-file-invoice-dollar"></i> Ventas
         </a>
+        <a href="{{ url('/reportes') }}" class="btn btn-sm {{ request()->is('reportes*') ? 'btn-purple' : 'btn-outline-secondary' }}">
+            <i class="fas fa-chart-bar"></i> Reportes
+        </a>
     </div>
 </div>
 
