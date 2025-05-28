@@ -104,9 +104,7 @@
                                             <input type="number" class="form-control precio-servicio" name="servicios[0][subtotal]" readonly>
                                         </td>
                                         <td>
-                                            <button type="button" class="btn btn-danger btn-sm" onclick="eliminarServicio(0)" disabled>
-                                                Eliminar
-                                            </button>
+                                            <!-- El botón eliminar no aparece en el primer servicio -->
                                         </td>
                                     </tr>
                                 </tbody>
@@ -182,11 +180,25 @@
         inputPrecio.name = `servicios[${currentId}][subtotal]`;
         inputPrecio.value = '';
 
-        // Actualizar botón eliminar - Corregido
-        const botonEliminar = nuevaFila.querySelector('button');
+        // Actualizar o crear botón eliminar en la celda correspondiente
+        let tdBotones = nuevaFila.querySelector('td:last-child');
+        // Limpiar la celda
+        tdBotones.innerHTML = '';
+        // Crear el botón eliminar con icono de basura
+        const botonEliminar = document.createElement('button');
+        botonEliminar.type = 'button';
+        botonEliminar.className = 'btn btn-danger btn-sm';
         botonEliminar.setAttribute('onclick', `eliminarServicio(${currentId})`);
-        botonEliminar.disabled = false;
-        botonEliminar.className = 'btn btn-purple btn-sm'; // Usar estilo btn-purple consistente
+        botonEliminar.style.width = '38px'; // Ancho fijo para consistencia
+        botonEliminar.title = 'Eliminar servicio'; // Tooltip para mejor UX
+        
+        // Crear icono de basura
+        const iconoBasura = document.createElement('i');
+        iconoBasura.className = 'fas fa-trash';
+        
+        // Agregar icono al botón
+        botonEliminar.appendChild(iconoBasura);
+        tdBotones.appendChild(botonEliminar);
 
         // Agregar la nueva fila al DOM
         document.getElementById('serviciosBody').appendChild(nuevaFila);
@@ -195,8 +207,16 @@
 
     // Eliminar fila de servicio
     function eliminarServicio(id) {
-        document.getElementById('filaServicio' + id).remove();
-        actualizarTotal();
+        // Contar cuántas filas de servicios hay actualmente
+        const filas = document.querySelectorAll('#serviciosBody tr').length;
+        
+        // Solo permitir eliminar si hay más de una fila
+        if (filas > 1) {
+            document.getElementById('filaServicio' + id).remove();
+            actualizarTotal();
+        } else {
+            alert('Debe mantenerse al menos un servicio');
+        }
     }
 
     // Actualizar el monto total
